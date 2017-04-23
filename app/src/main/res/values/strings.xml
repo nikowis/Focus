@@ -2,4 +2,7 @@
     <string name="app_name">Focus</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$s</string>
+    <string name="facebook_app_id">159677867894177</string>
+    <string name="fb_login_success_toast">Succesfully logged in</string>
+    <string name="fb_login_error_toast">Error connecting to facebook</string>
 </resources>
