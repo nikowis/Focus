@@ -16,6 +16,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by Nikodem on 4/22/2017.
  */
@@ -23,8 +27,10 @@ import java.util.List;
 public class FacebookFragment extends Fragment {
 
     private List<MediaItem> list;
-    private RecyclerView recyclerView;
+    @BindView(R.id.shopping_list)
+    RecyclerView recyclerView;
     private MediaFacebookAdapter facebookAdapter;
+    private Unbinder unbinder;
 
     @Nullable
     @Override
@@ -37,7 +43,8 @@ public class FacebookFragment extends Fragment {
         list.add(new MediaItem("tytul3", "opis opis opis opis"));
         list.add(new MediaItem("tytul4", "opis opis opis opis opis opis"));
         View mainFragment = inflater.inflate(R.layout.fragment_facebook, container, false);
-        recyclerView = (RecyclerView) mainFragment.findViewById(R.id.shopping_list);
+        unbinder = ButterKnife.bind(this, mainFragment);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         facebookAdapter = new MediaFacebookAdapter(list, getActivity());
@@ -46,4 +53,10 @@ public class FacebookFragment extends Fragment {
         return mainFragment;
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
+    }
 }
