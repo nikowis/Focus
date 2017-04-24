@@ -1,14 +1,14 @@
-package pl.nikowis.focus;
+package pl.nikowis.focus.facebook;
 
 /**
  * Created by Nikodem on 4/22/2017.
  */
 
-public class MediaItem {
+public class FacebookPost {
     private String title;
     private String description;
 
-    public MediaItem(String title, String description) {
+    public FacebookPost(String title, String description) {
         this.title = title;
         this.description = description;
     }

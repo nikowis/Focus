@@ -1,4 +1,4 @@
-package pl.nikowis.focus;
+package pl.nikowis.focus.facebook;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,29 +6,34 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.Profile;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
+import pl.nikowis.focus.R;
+import pl.nikowis.focus.rest.FbPostResponse;
+import pl.nikowis.focus.rest.ApiRequestManager;
+import pl.nikowis.focus.rest.FbPostResponseData;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Nikodem on 4/22/2017.
@@ -36,14 +41,15 @@ import com.facebook.login.widget.LoginButton;
 
 public class FacebookFragment extends Fragment {
 
-    private List<MediaItem> list;
+    private List<FacebookPost> list;
     @BindView(R.id.shopping_list)
     RecyclerView recyclerView;
-    private MediaFacebookAdapter facebookAdapter;
+    private FacebookPostsAdapter facebookAdapter;
     private Unbinder unbinder;
     @BindView(R.id.facebook_login_button)
     LoginButton loginButton;
     CallbackManager callbackManager;
+    private Profile currentProfile;
 
     @Nullable
     @Override
@@ -55,24 +61,25 @@ public class FacebookFragment extends Fragment {
 
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.setReadPermissions("email", "public_profile", "user_posts");
         loginButton.setFragment(this);
 
-        Profile currentProfile = Profile.getCurrentProfile();
-        if(currentProfile != null) {
+        currentProfile = Profile.getCurrentProfile();
+        if (currentProfile != null) {
             loginButton.setVisibility(View.GONE);
-            list.add(new MediaItem(currentProfile.getFirstName(), currentProfile.getLastName()));
+            list.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
+                list.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
             }
 
             @Override
             public void onCancel() {
-               //nothing
+                //nothing
             }
 
             @Override
@@ -83,10 +90,35 @@ public class FacebookFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        facebookAdapter = new MediaFacebookAdapter(list, getActivity());
+        facebookAdapter = new FacebookPostsAdapter(list, getActivity());
 
         recyclerView.setAdapter(facebookAdapter);
         return mainFragment;
+    }
+
+    @OnClick(R.id.facebook_fab)
+    public void load() {
+        Bundle params = new Bundle();
+        params.putString("with", "location");
+        ApiRequestManager requestManager = ApiRequestManager.getInstance(getContext());
+        requestManager.getUserFeed(currentProfile.getId(), AccessToken.getCurrentAccessToken().getToken(), new Callback<FbPostResponseData>() {
+            @Override
+            public void success(FbPostResponseData fbPostResponseData, Response response) {
+                Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                Log.w("asf", fbPostResponseData.toString());
+                for(FbPostResponse res : fbPostResponseData.fbPostResponses) {
+                    list.add(new FacebookPost(" ", res.toString()));
+                }
+                facebookAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(getContext(), "REST ERROR", Toast.LENGTH_SHORT).show();
+                Log.w("REST ERROR", error.getUrl());
+                Log.w("REST ERROR", error.getMessage());
+            }
+        });
     }
 
     @Override

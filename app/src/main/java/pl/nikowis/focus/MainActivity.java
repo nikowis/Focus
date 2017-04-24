@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.nikowis.focus.facebook.FacebookFragment;
 
 public class MainActivity extends AppCompatActivity {
 
