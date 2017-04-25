@@ -1,4 +1,4 @@
-package pl.nikowis.focus.rest;
+package pl.nikowis.focus.rest.base;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -9,12 +9,11 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
 
-import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
-public class ApiRequestManager {
+public abstract class ApiRequestManager {
 
     private static final String TAG = ApiRequestManager.class.getName();
 
@@ -24,9 +23,9 @@ public class ApiRequestManager {
 
     private static ApiRequestManager sApiRequestManager = null;
 
-    private ApiRequestManager(Context context) {
+    protected ApiRequestManager(Context context, String baseUrl) {
         this.mContext = context;
-        mUrl = "https://graph.facebook.com";
+        mUrl = baseUrl;
         createUserAgent();
     }
 
@@ -46,14 +45,7 @@ public class ApiRequestManager {
                 + ": " + Build.VERSION.RELEASE;
     }
 
-    public static ApiRequestManager getInstance(Context context) {
-        if (sApiRequestManager == null && context != null) {
-            sApiRequestManager = new ApiRequestManager(context);
-        }
-        return sApiRequestManager;
-    }
-
-    private RestAdapter createRestAdapter(final String mimeType) {
+    protected RestAdapter createRestAdapter() {
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.setConnectTimeout(120, TimeUnit.SECONDS);
         okHttpClient.setWriteTimeout(120, TimeUnit.SECONDS);
@@ -65,7 +57,7 @@ public class ApiRequestManager {
             @Override
             public void intercept(RequestFacade request) {
                 request.addHeader("User-Agent", mUserAgent);
-                request.addHeader("Content-Type", mimeType);
+                request.addHeader("Content-Type", "application/json");
             }
         });
         restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
@@ -85,12 +77,4 @@ public class ApiRequestManager {
         return restAdapter.build();
     }
 
-    private RestAdapter createDefaultRestAdapter() {
-        return createRestAdapter("application/json");
-    }
-
-    public void getUserFeed(final String userId, final String accessToken, final Callback<FbPostResponseData> callback) {
-        final UserRequest userRequest = createDefaultRestAdapter().create(UserRequest.class);
-        userRequest.getUserFeed(userId, accessToken, callback);
-    }
 }

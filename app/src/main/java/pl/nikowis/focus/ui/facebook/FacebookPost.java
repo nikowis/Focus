@@ -1,4 +1,4 @@
-package pl.nikowis.focus.facebook;
+package pl.nikowis.focus.ui.facebook;
 
 /**
  * Created by Nikodem on 4/22/2017.

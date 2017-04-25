@@ -1,9 +1,9 @@
-package pl.nikowis.focus.rest;
+package pl.nikowis.focus.rest.facebook;
 
 
 import com.google.gson.annotations.SerializedName;
 
-public class FbPostResponse {
+public class FbSinglePostResponse {
 
     @SerializedName("message")
     public String message;
@@ -16,7 +16,7 @@ public class FbPostResponse {
 
     @Override
     public String toString() {
-        return "FbPostResponse{" +
+        return "FbSinglePostResponse{" +
                 "message='" + message + '\'' +
                 ", story='" + story + '\'' +
                 ", login='" + login + '\'' +

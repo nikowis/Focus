@@ -1,4 +1,4 @@
-package pl.nikowis.focus.facebook;
+package pl.nikowis.focus.ui.facebook;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

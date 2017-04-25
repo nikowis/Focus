@@ -1,4 +1,4 @@
-package pl.nikowis.focus.facebook;
+package pl.nikowis.focus.ui.facebook;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,9 +28,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
-import pl.nikowis.focus.rest.FbPostResponse;
-import pl.nikowis.focus.rest.ApiRequestManager;
-import pl.nikowis.focus.rest.FbPostResponseData;
+import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
+import pl.nikowis.focus.rest.facebook.FbSinglePostResponse;
+import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -100,13 +100,13 @@ public class FacebookFragment extends Fragment {
     public void load() {
         Bundle params = new Bundle();
         params.putString("with", "location");
-        ApiRequestManager requestManager = ApiRequestManager.getInstance(getContext());
-        requestManager.getUserFeed(currentProfile.getId(), AccessToken.getCurrentAccessToken().getToken(), new Callback<FbPostResponseData>() {
+        FacebookRequestManager requestManager = FacebookRequestManager.getInstance(getContext());
+        requestManager.getUserFeed(currentProfile.getId(), AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
             @Override
-            public void success(FbPostResponseData fbPostResponseData, Response response) {
+            public void success(FbFeedDataResponse fbFeedDataResponse, Response response) {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-                Log.w("asf", fbPostResponseData.toString());
-                for(FbPostResponse res : fbPostResponseData.fbPostResponses) {
+                Log.w("asf", fbFeedDataResponse.toString());
+                for(FbSinglePostResponse res : fbFeedDataResponse.fbSinglePostResponses) {
                     list.add(new FacebookPost(" ", res.toString()));
                 }
                 facebookAdapter.notifyDataSetChanged();
