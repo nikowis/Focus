@@ -11,4 +11,7 @@ public interface FacebookRequests {
     @GET("/{user_id}/posts")
     void getUserFeed(@Path("user_id") String userId, @Query("access_token") String accessToken, Callback<FbFeedDataResponse> callback);
 
+    @GET("/{page_name}/posts")
+    void getPageFeed(@Path("page_name") String pageName, @Query("access_token") String accessToken, Callback<FbFeedDataResponse> callback);
+
 }

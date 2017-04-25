@@ -96,12 +96,12 @@ public class FacebookFragment extends Fragment {
         return mainFragment;
     }
 
-    @OnClick(R.id.facebook_fab)
+    @OnClick(R.id.facebook_fab_load_more)
     public void load() {
         Bundle params = new Bundle();
         params.putString("with", "location");
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(getContext());
-        requestManager.getUserFeed(currentProfile.getId(), AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
+        requestManager.getPageFeed("Quebonafide", AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
             @Override
             public void success(FbFeedDataResponse fbFeedDataResponse, Response response) {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();

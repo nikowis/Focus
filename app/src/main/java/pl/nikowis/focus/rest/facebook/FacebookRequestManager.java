@@ -28,4 +28,9 @@ public class FacebookRequestManager extends ApiRequestManager {
         final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
         facebookRequests.getUserFeed(userId, accessToken, callback);
     }
+
+    public void getPageFeed(final String pageName, final String accessToken, final Callback<FbFeedDataResponse> callback) {
+        final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
+        facebookRequests.getPageFeed(pageName, accessToken, callback);
+    }
 }
