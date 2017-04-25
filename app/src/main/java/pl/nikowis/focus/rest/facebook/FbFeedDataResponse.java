@@ -13,7 +13,8 @@ public class FbFeedDataResponse {
     @SerializedName("data")
     public ArrayList<FbSinglePostResponse> fbSinglePostResponses;
 
-
+    @SerializedName("paging")
+    public Paging paging;
 
     @Override
     public String toString() {

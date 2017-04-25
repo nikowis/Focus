@@ -12,6 +12,9 @@ public class FbLikesDataResponse {
     @SerializedName("data")
     public ArrayList<FbSingleLikeResponse> fbSinglePostResponses;
 
+    @SerializedName("paging")
+    public Paging paging;
+
     @Override
     public String toString() {
         return "FbLikesDataResponse{" +
