@@ -31,6 +31,7 @@ import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
 import pl.nikowis.focus.rest.facebook.FbSinglePostResponse;
 import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
+import pl.nikowis.focus.ui.base.SettingsActivity;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -41,21 +42,25 @@ import retrofit.client.Response;
 
 public class FacebookFragment extends Fragment {
 
-    private List<FacebookPost> list;
     @BindView(R.id.shopping_list)
     RecyclerView recyclerView;
-    private FacebookPostsAdapter facebookAdapter;
-    private Unbinder unbinder;
     @BindView(R.id.facebook_login_button)
     LoginButton loginButton;
-    CallbackManager callbackManager;
+
+    private List<FacebookPost> postsList;
+    private List<String> pagesList;
+    private FacebookPostsAdapter facebookAdapter;
+    private Unbinder unbinder;
+    private CallbackManager callbackManager;
     private Profile currentProfile;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        list = new ArrayList<>();
+        postsList = new ArrayList<>();
+        pagesList = new ArrayList<>();
+
         View mainFragment = inflater.inflate(R.layout.fragment_facebook, container, false);
         unbinder = ButterKnife.bind(this, mainFragment);
 
@@ -67,14 +72,14 @@ public class FacebookFragment extends Fragment {
         currentProfile = Profile.getCurrentProfile();
         if (currentProfile != null) {
             loginButton.setVisibility(View.GONE);
-            list.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
+            postsList.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
-                list.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
+                postsList.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
             }
 
             @Override
@@ -90,14 +95,14 @@ public class FacebookFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        facebookAdapter = new FacebookPostsAdapter(list, getActivity());
+        facebookAdapter = new FacebookPostsAdapter(postsList, getActivity());
 
         recyclerView.setAdapter(facebookAdapter);
         return mainFragment;
     }
 
     @OnClick(R.id.facebook_fab_load_more)
-    public void load() {
+    public void loadContent() {
         Bundle params = new Bundle();
         params.putString("with", "location");
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(getContext());
@@ -107,7 +112,7 @@ public class FacebookFragment extends Fragment {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                 Log.w("asf", fbFeedDataResponse.toString());
                 for(FbSinglePostResponse res : fbFeedDataResponse.fbSinglePostResponses) {
-                    list.add(new FacebookPost(" ", res.toString()));
+                    postsList.add(new FacebookPost(" ", res.toString()));
                 }
                 facebookAdapter.notifyDataSetChanged();
             }
@@ -119,6 +124,12 @@ public class FacebookFragment extends Fragment {
                 Log.w("REST ERROR", error.getMessage());
             }
         });
+    }
+
+    @OnClick(R.id.facebook_fab_add_pages)
+    public void addNewPage() {
+        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override
