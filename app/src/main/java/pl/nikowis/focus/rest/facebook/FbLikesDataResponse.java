@@ -8,26 +8,20 @@ import java.util.ArrayList;
  * Created by Nikodem on 4/25/2017.
  */
 
-public class FbFeedDataResponse {
-
+public class FbLikesDataResponse {
     @SerializedName("data")
-    public ArrayList<FbSinglePostResponse> fbSinglePostResponses;
-
-
+    public ArrayList<FbSingleLikeResponse> fbSinglePostResponses;
 
     @Override
     public String toString() {
-        return "FbFeedDataResponse{" +
+        return "FbLikesDataResponse{" +
                 "fbSinglePostResponses=" + fbSinglePostResponses +
                 '}';
     }
 
-    public static class FbSinglePostResponse {
-
-        @SerializedName("message")
-        public String message;
-        @SerializedName("story")
-        public String story;
+    private class FbSingleLikeResponse {
+        @SerializedName("name")
+        public String name;
         @SerializedName("created_time")
         public String login;
         @SerializedName("id")
@@ -35,11 +29,10 @@ public class FbFeedDataResponse {
 
         @Override
         public String toString() {
-            return "FbSinglePostResponse{" +
-                    "message='" + message + '\'' +
-                    ", story='" + story + '\'' +
+            return "FbSingleLikeResponse{" +
+                    "name='" + name + '\'' +
                     ", login='" + login + '\'' +
-                    ", id=" + id +
+                    ", id='" + id + '\'' +
                     '}';
         }
     }

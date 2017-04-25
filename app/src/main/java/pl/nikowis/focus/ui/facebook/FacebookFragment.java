@@ -1,7 +1,9 @@
 package pl.nikowis.focus.ui.facebook;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +23,9 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,9 +33,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
-import pl.nikowis.focus.rest.facebook.FbSinglePostResponse;
 import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
 import pl.nikowis.focus.ui.base.SettingsActivity;
+import pl.nikowis.focus.ui.base.SettingsFragment;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -66,7 +70,7 @@ public class FacebookFragment extends Fragment {
 
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton.setReadPermissions("email", "public_profile", "user_posts");
+        loginButton.setReadPermissions("email", "public_profile", "user_posts", "user_likes");
         loginButton.setFragment(this);
 
         currentProfile = Profile.getCurrentProfile();
@@ -106,13 +110,24 @@ public class FacebookFragment extends Fragment {
         Bundle params = new Bundle();
         params.putString("with", "location");
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(getContext());
-        requestManager.getPageFeed("Quebonafide", AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Set<String> pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+
+        for(String page : pages) {
+            requestPagePosts(requestManager, page);
+        }
+
+    }
+
+    private void requestPagePosts(FacebookRequestManager requestManager, final String page) {
+        requestManager.getPageFeed(page, AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
             @Override
             public void success(FbFeedDataResponse fbFeedDataResponse, Response response) {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                 Log.w("asf", fbFeedDataResponse.toString());
-                for(FbSinglePostResponse res : fbFeedDataResponse.fbSinglePostResponses) {
-                    postsList.add(new FacebookPost(" ", res.toString()));
+                for(FbFeedDataResponse.FbSinglePostResponse res : fbFeedDataResponse.fbSinglePostResponses) {
+                    postsList.add(new FacebookPost(page, res.message));
                 }
                 facebookAdapter.notifyDataSetChanged();
             }
