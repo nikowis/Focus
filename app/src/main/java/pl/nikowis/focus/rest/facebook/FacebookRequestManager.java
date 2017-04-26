@@ -5,7 +5,9 @@ import android.content.Context;
 import java.util.List;
 
 import pl.nikowis.focus.rest.base.ApiRequestManager;
-import retrofit.Callback;
+import retrofit2.Call;
+import retrofit2.Callback;
+
 
 /**
  * Created by Nikodem on 4/25/2017.
@@ -28,16 +30,14 @@ public class FacebookRequestManager extends ApiRequestManager {
 
     public void getUserFeed(final String userId, final String accessToken, final Callback<FbFeedDataResponse> callback) {
         final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
-        facebookRequests.getUserFeed(userId, accessToken, callback);
+        Call<FbFeedDataResponse> call = facebookRequests.getUserFeed(userId, accessToken);
+        call.enqueue(callback);
     }
 
     public void getPageFeed(final String pageName, final String accessToken, final Callback<FbFeedDataResponse> callback) {
         final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
-        facebookRequests.getPageFeed(pageName, accessToken, callback);
+        Call<FbFeedDataResponse> call = facebookRequests.getPageFeed(pageName, accessToken);
+        call.enqueue(callback);
     }
 
-    public void getMultiplePageFeed(final String pageName, final String accessToken, final Callback<List<FbFeedDataResponse>> callback) {
-        final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
-        facebookRequests.getMultiplePagesFeed(pageName, accessToken, callback);
-    }
 }

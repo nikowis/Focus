@@ -1,24 +1,20 @@
 package pl.nikowis.focus.rest.facebook;
 
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
-import java.util.List;
-
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.Query;
 
 public interface FacebookRequests {
 
     @GET("/{user_id}/posts")
-    void getUserFeed(@Path("user_id") String userId, @Query("access_token") String accessToken, Callback<FbFeedDataResponse> callback);
+    Call<FbFeedDataResponse> getUserFeed(@Path("user_id") String userId, @Query("access_token") String accessToken);
 
     @GET("/{user_id}/likes")
-    void getUserLikes(@Path("user_id") String userId, @Query("access_token") String accessToken, Callback<FbLikesDataResponse> callback);
+    Call<FbLikesDataResponse> getUserLikes(@Path("user_id") String userId, @Query("access_token") String accessToken);
 
     @GET("/{page_name}/posts")
-    void getPageFeed(@Path("page_name") String pageName, @Query("access_token") String accessToken, Callback<FbFeedDataResponse> callback);
+    Call<FbFeedDataResponse> getPageFeed(@Path("page_name") String pageName, @Query("access_token") String accessToken);
 
-    @GET("/posts")
-    void getMultiplePagesFeed(@Query("ids") String pagesIdsCommaSeparated, @Query("access_token") String accessToken, Callback<List<FbFeedDataResponse>> callback);
 }

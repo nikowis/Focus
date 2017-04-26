@@ -36,9 +36,10 @@ import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
 import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
 import pl.nikowis.focus.ui.base.SettingsActivity;
 import pl.nikowis.focus.ui.base.SettingsFragment;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 /**
  * Created by Nikodem on 4/22/2017.
@@ -114,7 +115,7 @@ public class FacebookFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         Set<String> pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
 
-        for(String page : pages) {
+        for (String page : pages) {
             requestPagePosts(requestManager, page);
         }
 
@@ -123,22 +124,23 @@ public class FacebookFragment extends Fragment {
     private void requestPagePosts(FacebookRequestManager requestManager, final String page) {
         requestManager.getPageFeed(page, AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
             @Override
-            public void success(FbFeedDataResponse fbFeedDataResponse, Response response) {
+            public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-                Log.w("asf", fbFeedDataResponse.toString());
-                for(FbFeedDataResponse.FbSinglePostResponse res : fbFeedDataResponse.fbSinglePostResponses) {
+
+                for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     postsList.add(new FacebookPost(page, res.message));
                 }
                 facebookAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<FbFeedDataResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "REST ERROR", Toast.LENGTH_SHORT).show();
-                Log.w("REST ERROR", error.getUrl());
-                Log.w("REST ERROR", error.getMessage());
+                Log.w("REST ERROR", t.getMessage());
+                Log.w("REST ERROR", t.getStackTrace().toString());
             }
         });
+
     }
 
     @OnClick(R.id.facebook_fab_add_pages)

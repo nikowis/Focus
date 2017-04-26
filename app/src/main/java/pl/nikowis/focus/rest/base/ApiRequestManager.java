@@ -5,13 +5,15 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
-
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class ApiRequestManager {
 
@@ -45,24 +47,8 @@ public abstract class ApiRequestManager {
                 + ": " + Build.VERSION.RELEASE;
     }
 
-    protected RestAdapter createRestAdapter() {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.setConnectTimeout(120, TimeUnit.SECONDS);
-        okHttpClient.setWriteTimeout(120, TimeUnit.SECONDS);
-        okHttpClient.setReadTimeout(120, TimeUnit.SECONDS);
-        RestAdapter.Builder restAdapter = new RestAdapter.Builder();
-        restAdapter.setEndpoint(mUrl);
-        restAdapter.setClient(new OkClient(okHttpClient));
-        restAdapter.setRequestInterceptor(new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                request.addHeader("User-Agent", mUserAgent);
-                request.addHeader("Content-Type", "application/json");
-            }
-        });
-        restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
-        restAdapter.setLog(new RestAdapter.Log() {
-
+    protected Retrofit createRestAdapter() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
                 int maxLogSize = 1000;
@@ -74,6 +60,19 @@ public abstract class ApiRequestManager {
                 }
             }
         });
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .addInterceptor(interceptor)
+                .build();
+
+        Retrofit.Builder restAdapter = new Retrofit.Builder();
+        restAdapter.baseUrl(mUrl);
+        restAdapter.client(okHttpClient);
+        restAdapter.addConverterFactory(GsonConverterFactory.create());
         return restAdapter.build();
     }
 
