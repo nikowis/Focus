@@ -40,4 +40,10 @@ public class FacebookRequestManager extends ApiRequestManager {
         call.enqueue(callback);
     }
 
+    public void getPageFeed(final String fullUrl, final Callback<FbFeedDataResponse> callback) {
+        final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
+        Call<FbFeedDataResponse> call = facebookRequests.getPageFeed(fullUrl);
+        call.enqueue(callback);
+    }
+
 }

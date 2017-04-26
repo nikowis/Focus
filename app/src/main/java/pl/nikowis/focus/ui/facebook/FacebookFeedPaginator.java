@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
@@ -24,16 +27,24 @@ import retrofit2.Response;
  * Created by Nikodem on 4/26/2017.
  */
 
-class FacebookFeedPaginator {
+public class FacebookFeedPaginator {
 
     private Context context;
     private FacebookPostsAdapter facebookAdapter;
     private List<FacebookPost> postsList;
+    private Set<String> pages;
+    private Map<String, String> nextMap;
 
     public FacebookFeedPaginator(Context context, FacebookPostsAdapter facebookAdapter) {
-        this.context= context;
+        this.context = context;
         this.facebookAdapter = facebookAdapter;
         this.postsList = facebookAdapter.getList();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+        nextMap = new HashMap<>();
+        for (String page : pages) {
+            nextMap.put(page, "");
+        }
     }
 
     public void loadContent() {
@@ -41,21 +52,29 @@ class FacebookFeedPaginator {
         params.putString("with", "location");
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
-
         for (String page : pages) {
             requestPagePosts(requestManager, page);
         }
     }
-
-
+    
     private void requestPagePosts(FacebookRequestManager requestManager, final String pageName) {
-        requestManager.getPageFeed(pageName, AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
+        Callback<FbFeedDataResponse> callback = createCallback(pageName);
+
+        if (nextMap.get(pageName).isEmpty()) {
+            requestManager.getPageFeed(pageName, AccessToken.getCurrentAccessToken().getToken(), callback);
+        } else {
+            requestManager.getPageFeed(nextMap.get(pageName), callback);
+        }
+    }
+
+    @NonNull
+    private Callback<FbFeedDataResponse> createCallback(final String pageName) {
+        return new Callback<FbFeedDataResponse>() {
             @Override
             public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
                 Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-
+                String next = response.body().paging.next;
+                nextMap.put(pageName, next);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     postsList.add(new FacebookPost(pageName, res.message));
                 }
@@ -68,8 +87,8 @@ class FacebookFeedPaginator {
                 Log.w("REST ERROR", t.getMessage());
                 Log.w("REST ERROR", t.getStackTrace().toString());
             }
-        });
-
+        };
     }
+
 
 }

@@ -4,6 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 
 public interface FacebookRequests {
@@ -17,4 +18,6 @@ public interface FacebookRequests {
     @GET("/{page_name}/posts")
     Call<FbFeedDataResponse> getPageFeed(@Path("page_name") String pageName, @Query("access_token") String accessToken);
 
+    @GET
+    Call<FbFeedDataResponse> getPageFeed(@Url String fullUrl);
 }
