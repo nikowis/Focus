@@ -5,24 +5,24 @@ package pl.nikowis.focus.ui.facebook;
  */
 
 public class FacebookPost {
-    private String title;
+    private String pageName;
     private String description;
 
-    public FacebookPost(String title, String description) {
-        this.title = title;
+    public FacebookPost(String pageName, String description) {
+        this.pageName = pageName;
         this.description = description;
     }
 
-    public String getTitle() {
-        return title;
+    public String getPageName() {
+        return pageName;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
     }
 
     public void setDescription(String description) {

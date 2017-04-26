@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import pl.nikowis.focus.R;
@@ -18,9 +19,9 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
     private List<FacebookPost> list;
     private Context context;
 
-    public FacebookPostsAdapter(List<FacebookPost> list, Context context) {
-        this.list = list;
+    public FacebookPostsAdapter( Context context) {
         this.context = context;
+        list = new LinkedList<>();
     }
 
     @Override
@@ -33,12 +34,16 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
     @Override
     public void onBindViewHolder(FacebookPostViewHolder holder, int position) {
         FacebookPost shoppingItem = list.get(position);
-        holder.mTitleView.setText(shoppingItem.getTitle());
+        holder.mTitleView.setText(shoppingItem.getPageName());
         holder.mDescriptionView.setText(shoppingItem.getDescription());
     }
 
     @Override
     public int getItemCount() {
         return list != null ? list.size() : 0;
+    }
+
+    public List<FacebookPost> getList() {
+        return list;
     }
 }

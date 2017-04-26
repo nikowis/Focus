@@ -1,20 +1,16 @@
 package pl.nikowis.focus.ui.facebook;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -23,22 +19,14 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
-import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
-import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
 import pl.nikowis.focus.ui.base.SettingsActivity;
-import pl.nikowis.focus.ui.base.SettingsFragment;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -54,6 +42,7 @@ public class FacebookFragment extends Fragment {
 
     private List<FacebookPost> postsList;
     private List<String> pagesList;
+    private FacebookFeedPaginator facebookFeedPaginator;
     private FacebookPostsAdapter facebookAdapter;
     private Unbinder unbinder;
     private CallbackManager callbackManager;
@@ -65,6 +54,9 @@ public class FacebookFragment extends Fragment {
 
         postsList = new ArrayList<>();
         pagesList = new ArrayList<>();
+        facebookAdapter = new FacebookPostsAdapter(getActivity());
+
+        facebookFeedPaginator = new FacebookFeedPaginator(getActivity(), facebookAdapter);
 
         View mainFragment = inflater.inflate(R.layout.fragment_facebook, container, false);
         unbinder = ButterKnife.bind(this, mainFragment);
@@ -100,46 +92,14 @@ public class FacebookFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        facebookAdapter = new FacebookPostsAdapter(postsList, getActivity());
-
         recyclerView.setAdapter(facebookAdapter);
         return mainFragment;
     }
 
     @OnClick(R.id.facebook_fab_load_more)
     public void loadContent() {
-        Bundle params = new Bundle();
-        params.putString("with", "location");
-        FacebookRequestManager requestManager = FacebookRequestManager.getInstance(getContext());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        Set<String> pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
-
-        for (String page : pages) {
-            requestPagePosts(requestManager, page);
-        }
-
-    }
-
-    private void requestPagePosts(FacebookRequestManager requestManager, final String page) {
-        requestManager.getPageFeed(page, AccessToken.getCurrentAccessToken().getToken(), new Callback<FbFeedDataResponse>() {
-            @Override
-            public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
-                Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-
-                for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
-                    postsList.add(new FacebookPost(page, res.message));
-                }
-                facebookAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<FbFeedDataResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "REST ERROR", Toast.LENGTH_SHORT).show();
-                Log.w("REST ERROR", t.getMessage());
-                Log.w("REST ERROR", t.getStackTrace().toString());
-            }
-        });
+        facebookFeedPaginator.loadContent();
 
     }
 
