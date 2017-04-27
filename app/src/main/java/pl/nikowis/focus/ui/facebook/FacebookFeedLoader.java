@@ -38,7 +38,8 @@ public class FacebookFeedLoader {
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
     private int pageCount = 10;
-    private boolean loadingMoreElementsFromFacebook=true;
+    private boolean loadingMoreElementsFromFacebook;
+    private boolean loadedFirstRecords;
 
     public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
         this.context = context;
@@ -48,10 +49,10 @@ public class FacebookFeedLoader {
         pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
         nextPagesMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
-        queuedPostsList = new ArrayList<>(pageCount*10);
+        queuedPostsList = new ArrayList<>(pageCount * 10);
         for (String page : pages) {
             nextPagesMap.put(page, "");
-            loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount*10));
+            loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
         for (String page : pages) {
             requestPagePosts(page);
@@ -59,21 +60,32 @@ public class FacebookFeedLoader {
     }
 
     public void loadContent() {
-        if(!loadingMoreElementsFromFacebook) {
-            calculateQueuedPostsList();
-            visiblePostsList.addAll(queuedPostsList);
-            queuedPostsList.clear();
-            facebookAdapter.notifyDataSetChanged();
+        if (!loadedFirstRecords) {
+            for (List<FacebookPost> list : loadedPostsMap.values()) {
+                list.clear();
+            }
+            loadingMoreElementsFromFacebook = true;
+            for (String page : pages) {
+                requestPagePosts(page);
+
+            }
+        } else if (!loadingMoreElementsFromFacebook) {
+            try {
+                calculateQueuedPostsList();
+                visiblePostsList.addAll(queuedPostsList);
+                queuedPostsList.clear();
+                facebookAdapter.notifyDataSetChanged();
+            } catch (IndexOutOfBoundsException e) {
+                //too fast refreshing
+                return;
+            }
         }
     }
 
     private void calculateQueuedPostsList() {
-        //get first posts in order
-        //if list finishes synchronously get more posts
         Map<String, FacebookPost> latestPostsFromEachPage = constructLatestsPostsMap();
 
         for (int i = 0; i < pageCount; i++) {
-            //wybierz najwcześniesjzy usuń go i dopełnij z jego listy
             Map.Entry<String, FacebookPost> latest = getLatestPostEntrySet(latestPostsFromEachPage);
             queuedPostsList.add(latest.getValue());
             List<FacebookPost> remainingPagePosts = loadedPostsMap.get(latest.getKey());
@@ -130,17 +142,18 @@ public class FacebookFeedLoader {
                 String next = response.body().paging.next;
                 nextPagesMap.put(pageName, next);
 
-                List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount*10);
+                List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount * 10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     postsFromResponse.add(new FacebookPost(pageName, res.message, res.date));
                 }
                 loadedPostsMap.get(pageName).addAll(postsFromResponse);
                 loadingMoreElementsFromFacebook = false;
+                loadedFirstRecords = true;
             }
 
             @Override
             public void onFailure(Call<FbFeedDataResponse> call, Throwable t) {
-                Toast.makeText(context, "REST ERROR", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "CONNECTION ERROR", Toast.LENGTH_SHORT).show();
                 Log.w("REST ERROR", t.getMessage());
                 Log.w("REST ERROR", t.getStackTrace().toString());
             }
