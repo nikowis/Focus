@@ -1,5 +1,7 @@
 package pl.nikowis.focus.ui.facebook;
 
+import java.util.Date;
+
 /**
  * Created by Nikodem on 4/22/2017.
  */
@@ -7,10 +9,12 @@ package pl.nikowis.focus.ui.facebook;
 public class FacebookPost {
     private String pageName;
     private String description;
+    private Date date;
 
-    public FacebookPost(String pageName, String description) {
+    public FacebookPost(String pageName, String description, Date date) {
         this.pageName = pageName;
         this.description = description;
+        this.date = date;
     }
 
     public String getPageName() {
@@ -27,5 +31,13 @@ public class FacebookPost {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

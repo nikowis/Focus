@@ -9,4 +9,6 @@ import com.google.gson.annotations.SerializedName;
 public class Paging {
     @SerializedName("next")
     public String next;
+    @SerializedName("previous")
+    public String previous;
 }

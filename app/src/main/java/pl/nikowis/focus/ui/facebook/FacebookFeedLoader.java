@@ -2,7 +2,6 @@ package pl.nikowis.focus.ui.facebook;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -12,6 +11,7 @@ import com.facebook.AccessToken;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,43 +27,47 @@ import retrofit2.Response;
  * Created by Nikodem on 4/26/2017.
  */
 
-public class FacebookFeedPaginator {
+public class FacebookFeedLoader {
 
     private Context context;
     private FacebookPostsAdapter facebookAdapter;
-    private List<FacebookPost> postsList;
+    private List<FacebookPost> visiblePostsList;
     private Set<String> pages;
-    private Map<String, String> nextMap;
+    private Map<String, String> nextPagesMap;
+    private Map<String, List<FacebookPost>> loadedPostsMap;
+    private List<FacebookPost> queuedPostsList;
+    private int pageCount = 10;
 
-    public FacebookFeedPaginator(Context context, FacebookPostsAdapter facebookAdapter) {
+    public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
         this.context = context;
         this.facebookAdapter = facebookAdapter;
-        this.postsList = facebookAdapter.getList();
+        this.visiblePostsList = facebookAdapter.getList();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
-        nextMap = new HashMap<>();
+        nextPagesMap = new HashMap<>();
+        loadedPostsMap = new HashMap<>();
+        queuedPostsList = new LinkedList();
         for (String page : pages) {
-            nextMap.put(page, "");
+            nextPagesMap.put(page, "");
+            loadedPostsMap.put(page, new LinkedList<FacebookPost>());
         }
     }
 
     public void loadContent() {
-        Bundle params = new Bundle();
-        params.putString("with", "location");
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
 
         for (String page : pages) {
             requestPagePosts(requestManager, page);
         }
     }
-    
+
     private void requestPagePosts(FacebookRequestManager requestManager, final String pageName) {
         Callback<FbFeedDataResponse> callback = createCallback(pageName);
 
-        if (nextMap.get(pageName).isEmpty()) {
+        if (nextPagesMap.get(pageName).isEmpty()) {
             requestManager.getPageFeed(pageName, AccessToken.getCurrentAccessToken().getToken(), callback);
         } else {
-            requestManager.getPageFeed(nextMap.get(pageName), callback);
+            requestManager.getPageFeed(nextPagesMap.get(pageName), callback);
         }
     }
 
@@ -74,10 +78,15 @@ public class FacebookFeedPaginator {
             public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
                 Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
                 String next = response.body().paging.next;
-                nextMap.put(pageName, next);
+                nextPagesMap.put(pageName, next);
+
+                List<FacebookPost> postsFromResponse = new LinkedList<>();
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
-                    postsList.add(new FacebookPost(pageName, res.message));
+                    postsFromResponse.add(new FacebookPost(pageName, res.message, res.date));
                 }
+                visiblePostsList.addAll(postsFromResponse);
+                loadedPostsMap.put(pageName, postsFromResponse);
+
                 facebookAdapter.notifyDataSetChanged();
             }
 

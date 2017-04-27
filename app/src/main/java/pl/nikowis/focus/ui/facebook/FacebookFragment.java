@@ -18,9 +18,6 @@ import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,9 +37,7 @@ public class FacebookFragment extends Fragment {
     @BindView(R.id.facebook_login_button)
     LoginButton loginButton;
 
-    private List<FacebookPost> postsList;
-    private List<String> pagesList;
-    private FacebookFeedPaginator facebookFeedPaginator;
+    private FacebookFeedLoader facebookFeedLoader;
     private FacebookPostsAdapter facebookAdapter;
     private Unbinder unbinder;
     private CallbackManager callbackManager;
@@ -52,31 +47,25 @@ public class FacebookFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        postsList = new ArrayList<>();
-        pagesList = new ArrayList<>();
         facebookAdapter = new FacebookPostsAdapter(getActivity());
 
-        facebookFeedPaginator = new FacebookFeedPaginator(getActivity(), facebookAdapter);
+        facebookFeedLoader = new FacebookFeedLoader(getActivity(), facebookAdapter);
 
         View mainFragment = inflater.inflate(R.layout.fragment_facebook, container, false);
         unbinder = ButterKnife.bind(this, mainFragment);
 
         callbackManager = CallbackManager.Factory.create();
-
         loginButton.setReadPermissions("email", "public_profile", "user_posts", "user_likes");
         loginButton.setFragment(this);
-
         currentProfile = Profile.getCurrentProfile();
         if (currentProfile != null) {
             loginButton.setVisibility(View.GONE);
-            postsList.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
-                postsList.add(new FacebookPost(currentProfile.getFirstName(), currentProfile.getLastName()));
             }
 
             @Override
@@ -91,16 +80,13 @@ public class FacebookFragment extends Fragment {
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         recyclerView.setAdapter(facebookAdapter);
         return mainFragment;
     }
 
     @OnClick(R.id.facebook_fab_load_more)
     public void loadContent() {
-
-        facebookFeedPaginator.loadContent();
-
+        facebookFeedLoader.loadContent();
     }
 
     @OnClick(R.id.facebook_fab_add_pages)

@@ -5,4 +5,5 @@
     <string name="facebook_app_id">159677867894177</string>
     <string name="fb_login_success_toast">Succesfully logged in</string>
     <string name="fb_login_error_toast">Error connecting to facebook</string>
+    <string name="display_date_format">HH:mm:ss dd/MM/yyyy</string>
 </resources>

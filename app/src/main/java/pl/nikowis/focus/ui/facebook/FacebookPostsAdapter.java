@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,10 +19,12 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
 
     private List<FacebookPost> list;
     private Context context;
+    private SimpleDateFormat ft;
 
     public FacebookPostsAdapter( Context context) {
         this.context = context;
         list = new LinkedList<>();
+        ft = new SimpleDateFormat(context.getString(R.string.display_date_format));
     }
 
     @Override
@@ -36,6 +39,11 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
         FacebookPost shoppingItem = list.get(position);
         holder.mTitleView.setText(shoppingItem.getPageName());
         holder.mDescriptionView.setText(shoppingItem.getDescription());
+        if(shoppingItem.getDate()!= null) {
+            holder.mDateView.setText(ft.format(shoppingItem.getDate()));
+        } else {
+            holder.mDateView.setText("");
+        }
     }
 
     @Override
@@ -45,5 +53,9 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
 
     public List<FacebookPost> getList() {
         return list;
+    }
+
+    public void setList(List<FacebookPost> list) {
+        this.list = list;
     }
 }

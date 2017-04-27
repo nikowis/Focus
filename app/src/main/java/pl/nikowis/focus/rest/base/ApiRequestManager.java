@@ -1,16 +1,14 @@
 package pl.nikowis.focus.rest.base;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -21,30 +19,12 @@ public abstract class ApiRequestManager {
 
     private Context mContext;
     private String mUrl;
-    private String mUserAgent;
 
     private static ApiRequestManager sApiRequestManager = null;
 
     protected ApiRequestManager(Context context, String baseUrl) {
         this.mContext = context;
         mUrl = baseUrl;
-        createUserAgent();
-    }
-
-    private String getAppVersionName(Context ctx) {
-        try {
-            return ctx.getPackageManager().getPackageInfo(
-                    ctx.getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return "";
-        }
-    }
-
-    private void createUserAgent() {
-        mUserAgent = "FocusApp"
-                + " (" + getAppVersionName(mContext) + ") "
-                + "android"
-                + ": " + Build.VERSION.RELEASE;
     }
 
     protected Retrofit createRestAdapter() {
@@ -72,7 +52,8 @@ public abstract class ApiRequestManager {
         Retrofit.Builder restAdapter = new Retrofit.Builder();
         restAdapter.baseUrl(mUrl);
         restAdapter.client(okHttpClient);
-        restAdapter.addConverterFactory(GsonConverterFactory.create());
+        Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+        restAdapter.addConverterFactory(GsonConverterFactory.create(gson));
         return restAdapter.build();
     }
 

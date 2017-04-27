@@ -3,6 +3,7 @@ package pl.nikowis.focus.rest.facebook;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Nikodem on 4/25/2017.
@@ -30,7 +31,7 @@ public class FbFeedDataResponse {
         @SerializedName("story")
         public String story;
         @SerializedName("created_time")
-        public String login;
+        public Date date;
         @SerializedName("id")
         public String id;
 
@@ -39,7 +40,7 @@ public class FbFeedDataResponse {
             return "FbSinglePostResponse{" +
                     "message='" + message + '\'' +
                     ", story='" + story + '\'' +
-                    ", login='" + login + '\'' +
+                    ", created_time='" + date + '\'' +
                     ", id=" + id +
                     '}';
         }
