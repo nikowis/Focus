@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.text.SimpleDateFormat;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.nikowis.focus.R;
@@ -23,7 +23,7 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
 
     public FacebookPostsAdapter( Context context) {
         this.context = context;
-        list = new LinkedList<>();
+        list = new ArrayList<>(100);
         ft = new SimpleDateFormat(context.getString(R.string.display_date_format));
     }
 

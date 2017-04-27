@@ -9,9 +9,10 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,7 @@ public class FacebookFeedLoader {
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
     private int pageCount = 10;
+    private boolean loadingMoreElementsFromFacebook=true;
 
     public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
         this.context = context;
@@ -44,26 +46,74 @@ public class FacebookFeedLoader {
         this.visiblePostsList = facebookAdapter.getList();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         pages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
-        nextPagesMap = new HashMap<>();
-        loadedPostsMap = new HashMap<>();
-        queuedPostsList = new LinkedList();
+        nextPagesMap = new LinkedHashMap<>();
+        loadedPostsMap = new LinkedHashMap<>();
+        queuedPostsList = new ArrayList<>(pageCount*10);
         for (String page : pages) {
             nextPagesMap.put(page, "");
-            loadedPostsMap.put(page, new LinkedList<FacebookPost>());
+            loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount*10));
+        }
+        for (String page : pages) {
+            requestPagePosts(page);
         }
     }
 
     public void loadContent() {
-        FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
-
-        for (String page : pages) {
-            requestPagePosts(requestManager, page);
+        if(!loadingMoreElementsFromFacebook) {
+            calculateQueuedPostsList();
+            visiblePostsList.addAll(queuedPostsList);
+            queuedPostsList.clear();
+            facebookAdapter.notifyDataSetChanged();
         }
     }
 
-    private void requestPagePosts(FacebookRequestManager requestManager, final String pageName) {
-        Callback<FbFeedDataResponse> callback = createCallback(pageName);
+    private void calculateQueuedPostsList() {
+        //get first posts in order
+        //if list finishes synchronously get more posts
+        Map<String, FacebookPost> latestPostsFromEachPage = constructLatestsPostsMap();
 
+        for (int i = 0; i < pageCount; i++) {
+            //wybierz najwcześniesjzy usuń go i dopełnij z jego listy
+            Map.Entry<String, FacebookPost> latest = getLatestPostEntrySet(latestPostsFromEachPage);
+            queuedPostsList.add(latest.getValue());
+            List<FacebookPost> remainingPagePosts = loadedPostsMap.get(latest.getKey());
+            remainingPagePosts.remove(0);
+            latestPostsFromEachPage.put(latest.getKey(), remainingPagePosts.get(0));
+
+        }
+    }
+
+    @NonNull
+    private Map<String, FacebookPost> constructLatestsPostsMap() {
+        Map<String, FacebookPost> latestPostsFromEachPage = new LinkedHashMap<>();
+        for (String key : loadedPostsMap.keySet()) {
+            List<FacebookPost> facebookPosts = loadedPostsMap.get(key);
+            if (facebookPosts.size() < pageCount + 1) {
+                loadingMoreElementsFromFacebook = true;
+                requestPagePosts(key);
+            }
+            latestPostsFromEachPage.put(key, facebookPosts.get(0));
+        }
+        return latestPostsFromEachPage;
+    }
+
+    //działa poprawnie
+    private Map.Entry<String, FacebookPost> getLatestPostEntrySet(Map<String, FacebookPost> latestPostsFromEachPage) {
+        Iterator<Map.Entry<String, FacebookPost>> iterator = latestPostsFromEachPage.entrySet().iterator();
+        Map.Entry<String, FacebookPost> latestEntrySet = iterator.next();
+        while (iterator.hasNext()) {
+            Map.Entry<String, FacebookPost> next = iterator.next();
+            if (latestEntrySet.getValue().getDate().compareTo(next.getValue().getDate()) < 0) {
+                latestEntrySet = next;
+            }
+        }
+
+        return latestEntrySet;
+    }
+
+    private void requestPagePosts(final String pageName) {
+        FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
+        Callback<FbFeedDataResponse> callback = createCallback(pageName);
         if (nextPagesMap.get(pageName).isEmpty()) {
             requestManager.getPageFeed(pageName, AccessToken.getCurrentAccessToken().getToken(), callback);
         } else {
@@ -80,14 +130,12 @@ public class FacebookFeedLoader {
                 String next = response.body().paging.next;
                 nextPagesMap.put(pageName, next);
 
-                List<FacebookPost> postsFromResponse = new LinkedList<>();
+                List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount*10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     postsFromResponse.add(new FacebookPost(pageName, res.message, res.date));
                 }
-                visiblePostsList.addAll(postsFromResponse);
-                loadedPostsMap.put(pageName, postsFromResponse);
-
-                facebookAdapter.notifyDataSetChanged();
+                loadedPostsMap.get(pageName).addAll(postsFromResponse);
+                loadingMoreElementsFromFacebook = false;
             }
 
             @Override
