@@ -67,7 +67,6 @@ public class FacebookFeedLoader {
             loadingMoreElementsFromFacebook = true;
             for (String page : pages) {
                 requestPagePosts(page);
-
             }
         } else if (!loadingMoreElementsFromFacebook) {
             try {
@@ -139,6 +138,13 @@ public class FacebookFeedLoader {
             @Override
             public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
                 Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                if (response.errorBody() != null) {
+                    loadedPostsMap.remove(pageName);
+                    nextPagesMap.remove(pageName);
+                    pages.remove(pageName);
+                    Toast.makeText(context, pageName + " INCORRECT ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String next = response.body().paging.next;
                 nextPagesMap.put(pageName, next);
 
