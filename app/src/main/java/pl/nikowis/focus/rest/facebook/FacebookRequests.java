@@ -20,4 +20,7 @@ public interface FacebookRequests {
 
     @GET
     Call<FbFeedDataResponse> getPageFeed(@Url String fullUrl);
+
+    @GET
+    Call<FbLikesDataResponse> getUserLikes(@Url String fullUrl);
 }

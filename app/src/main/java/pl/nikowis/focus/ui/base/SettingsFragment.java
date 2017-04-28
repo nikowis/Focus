@@ -1,21 +1,16 @@
 package pl.nikowis.focus.ui.base;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import pl.nikowis.focus.R;
@@ -28,8 +23,12 @@ public class SettingsFragment extends PreferenceFragment {
 
     public static final String KEY_PREF_ADD_PAGE = "pref_add_pages";
     public static final String KEY_PREF_SELECTED_PAGES = "select_pages";
+    public static final String KEY_PREF_SELECTED_CUSTOM_PAGES = "select_custom_pages";
+    public static final String KEY_PREF_LIKED_PAGES_IDS = "liked_pages_ids";
+    public static final String KEY_PREF_LIKED_PAGES_NAMES = "liked_pages_names";
 
-    private Set<String> pages = new HashSet<>();
+    private Set<String> pagesIds;
+    private Set<String> pagesNames;
     private MultiSelectListPreference listPreference;
 
     @Override
@@ -37,7 +36,8 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        pages = prefs.getStringSet(KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+        pagesIds = prefs.getStringSet(KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
+        pagesNames = prefs.getStringSet(KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -53,7 +53,9 @@ public class SettingsFragment extends PreferenceFragment {
                     Toast.makeText(getActivity(), "Empty text", Toast.LENGTH_SHORT).show();
                 } else {
                     try {
-                        pages.add(newValue.toString());
+                        //dodac osobna liste do customowych
+//                        pagesIds.add(newValue.toString());
+//                        pagesNames.add(newValue.toString());
                         setListPreferenceData();
                     } catch (IllegalArgumentException e) {
                         Toast.makeText(getActivity(), "This page is on the list", Toast.LENGTH_SHORT).show();
@@ -66,9 +68,10 @@ public class SettingsFragment extends PreferenceFragment {
     }
 
     private void setListPreferenceData() {
-        CharSequence[] entries = pages.toArray(new CharSequence[0]);
+        CharSequence[] entries = pagesNames.toArray(new CharSequence[0]);
+        CharSequence[] entriesValues = pagesIds.toArray(new CharSequence[0]);
         listPreference.setEntries(entries);
-        listPreference.setEntryValues(entries);
+        listPreference.setEntryValues(entriesValues);
     }
 
 }

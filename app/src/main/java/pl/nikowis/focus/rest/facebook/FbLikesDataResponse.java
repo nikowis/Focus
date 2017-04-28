@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class FbLikesDataResponse {
     @SerializedName("data")
-    public ArrayList<FbSingleLikeResponse> fbSinglePostResponses;
+    public ArrayList<FbSingleLikeResponse> fbSingleLikeResponses;
 
     @SerializedName("paging")
     public Paging paging;
@@ -18,15 +18,15 @@ public class FbLikesDataResponse {
     @Override
     public String toString() {
         return "FbLikesDataResponse{" +
-                "fbSinglePostResponses=" + fbSinglePostResponses +
+                "fbSinglePostResponses=" + fbSingleLikeResponses +
                 '}';
     }
 
-    private class FbSingleLikeResponse {
+    public class FbSingleLikeResponse {
         @SerializedName("name")
         public String name;
         @SerializedName("created_time")
-        public String login;
+        public String date;
         @SerializedName("id")
         public String id;
 
@@ -34,7 +34,7 @@ public class FbLikesDataResponse {
         public String toString() {
             return "FbSingleLikeResponse{" +
                     "name='" + name + '\'' +
-                    ", login='" + login + '\'' +
+                    ", date='" + date + '\'' +
                     ", id='" + id + '\'' +
                     '}';
         }

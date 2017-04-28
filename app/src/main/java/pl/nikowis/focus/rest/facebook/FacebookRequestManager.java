@@ -46,4 +46,15 @@ public class FacebookRequestManager extends ApiRequestManager {
         call.enqueue(callback);
     }
 
+    public void getLikedPages(final String userId, final String accesqsToken, final Callback<FbLikesDataResponse> callback) {
+        final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
+        Call<FbLikesDataResponse> call = facebookRequests.getUserLikes(userId, accesqsToken);
+        call.enqueue(callback);
+    }
+
+    public void getLikedPages(final String fullUrl, final Callback<FbLikesDataResponse> callback) {
+        final FacebookRequests facebookRequests = createRestAdapter().create(FacebookRequests.class);
+        Call<FbLikesDataResponse> call = facebookRequests.getUserLikes(fullUrl);
+        call.enqueue(callback);
+    }
 }

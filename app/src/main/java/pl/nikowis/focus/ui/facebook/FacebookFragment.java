@@ -66,6 +66,8 @@ public class FacebookFragment extends Fragment {
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
+                FacebookLikesLoader likesLoader = new FacebookLikesLoader(getContext());
+                likesLoader.loadAllLikes();
             }
 
             @Override
