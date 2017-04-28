@@ -3,14 +3,21 @@
     <PreferenceCategory
         android:key="pref_key_storage_settings"
         android:title="Facebook">
+        <CheckBoxPreference
+            android:key="pref_using_custom_pages"
+            android:title="Custom pages"
+            android:defaultValue="false"/>
         <EditTextPreference
             android:key="pref_add_pages"
             android:title="Add page"
             android:defaultValue=""
             android:inputType="text"/>
         <MultiSelectListPreference
-            android:key="select_pages"
+            android:key="pref_select_pages"
             android:title="Select pages"/>
+        <MultiSelectListPreference
+            android:key="pref_select_custom_pages"
+            android:title="Select custom pages"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

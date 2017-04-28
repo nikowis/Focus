@@ -1,7 +1,9 @@
 package pl.nikowis.focus.ui.facebook;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +26,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
 import pl.nikowis.focus.ui.base.SettingsActivity;
+import pl.nikowis.focus.ui.base.SettingsFragment;
 
 
 /**
@@ -47,9 +50,19 @@ public class FacebookFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        facebookAdapter = new FacebookPostsAdapter(getActivity());
+        facebookAdapter = new FacebookPostsAdapter(getContext());
 
-        facebookFeedLoader = new FacebookFeedLoader(getActivity(), facebookAdapter);
+        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if(key.equals(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
+                    facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+                }
+            }
+        });
 
         View mainFragment = inflater.inflate(R.layout.fragment_facebook, container, false);
         unbinder = ButterKnife.bind(this, mainFragment);
@@ -65,7 +78,7 @@ public class FacebookFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
                 FacebookLikesLoader likesLoader = new FacebookLikesLoader(getContext());
                 likesLoader.loadAllLikes();
             }

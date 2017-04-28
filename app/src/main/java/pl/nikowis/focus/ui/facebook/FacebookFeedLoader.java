@@ -43,16 +43,24 @@ public class FacebookFeedLoader {
     private boolean loadedFirstRecords;
     private Set<String> pagesIds;
     private Set<String> pagesNames;
+    private boolean usingCustomPages;
 
     public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
         this.context = context;
         this.facebookAdapter = facebookAdapter;
         this.visiblePostsList = facebookAdapter.getList();
+        visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
 
-        pagesIds = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
-        pagesNames = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
+        usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
+
+        if(!usingCustomPages) {
+            selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+            pagesIds = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
+            pagesNames = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
+        } else {
+            selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+        }
 
         nextPagesMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
@@ -174,6 +182,9 @@ public class FacebookFeedLoader {
     }
 
     private String getPageName(String pageId) {
+        if(usingCustomPages) {
+            return pageId;
+        }
         int index = getIndex(pagesIds, pageId);
         int i = 0;
         String res = "";
