@@ -100,7 +100,7 @@ public class FacebookFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
-                Toast.makeText(getContext(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
                 new FacebookLikesLoader(getContext()).loadAllLikes();
             }
 

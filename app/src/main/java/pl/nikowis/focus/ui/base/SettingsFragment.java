@@ -11,7 +11,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import pl.nikowis.focus.R;
@@ -40,20 +42,21 @@ public class SettingsFragment extends PreferenceFragment {
      */
     public static final String KEY_PREF_USING_CUSTOM_PAGES = "pref_using_custom_pages";
     /**
-     * Preference key for liked pages ids.
+     * Preference key for liked pages ids concatenated with their names.
      */
-    public static final String KEY_PREF_LIKED_PAGES_IDS = "pref_liked_pages_ids";
+    public static final String KEY_PREF_LIKED_PAGES_IDS_AND_NAMES = "pref_liked_pages_ids_and_names";
+
     /**
-     * Preference key for liked pages names.
+     * Id - name separator.
      */
-    public static final String KEY_PREF_LIKED_PAGES_NAMES = "pref_liked_pages_names";
+    public static final String ID_NAME_SEPARATOR = ";;;;";
+
     /**
      * Preference key for reload facebook likes.
      */
     public static final String KEY_PREF_RELOAD_FACEBOOK_LIKES = "pref_reload_facebook_likes";
 
-    private Set<String> pagesIds;
-    private Set<String> pagesNames;
+    private Set<String> pagesIdsAndNames;
     private Set<String> customPages;
     private MultiSelectListPreference selectedPagesPreference;
     private MultiSelectListPreference selectedCustomPagesPreference;
@@ -77,8 +80,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 prefs.edit().remove(KEY_PREF_SELECTED_PAGES).apply();
-                prefs.edit().remove(KEY_PREF_LIKED_PAGES_IDS).apply();
-                prefs.edit().remove(KEY_PREF_LIKED_PAGES_NAMES).apply();
+                prefs.edit().remove(KEY_PREF_LIKED_PAGES_IDS_AND_NAMES).apply();
                 new FacebookLikesLoader(getActivity(), createLikesLoadedCallback()).loadAllLikes();
                 setSelectedPagesPreferenceData();
                 return true;
@@ -108,7 +110,7 @@ public class SettingsFragment extends PreferenceFragment {
                     Toast.makeText(getActivity(), "Empty text", Toast.LENGTH_SHORT).show();
                 } else {
                     try {
-                        customPages.add(newValue.toString());
+                        customPages.add(newValue.toString() + ID_NAME_SEPARATOR + newValue.toString());
                         setSelectedPagesPreferenceData();
                     } catch (IllegalArgumentException e) {
                         Toast.makeText(getActivity(), "This page is on the list", Toast.LENGTH_SHORT).show();
@@ -137,14 +139,16 @@ public class SettingsFragment extends PreferenceFragment {
 
     private void setSelectedPagesPreferenceData() {
         if (usingCustom) {
-            CharSequence[] entries = customPages.toArray(new CharSequence[0]);
-            selectedCustomPagesPreference.setEntries(entries);
-            selectedCustomPagesPreference.setEntryValues(entries);
-        } else {
-            pagesIds = prefs.getStringSet(KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
-            pagesNames = prefs.getStringSet(KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
+            List<String> pagesNames = getPageNamesList(customPages);
             CharSequence[] entries = pagesNames.toArray(new CharSequence[0]);
-            CharSequence[] entriesValues = pagesIds.toArray(new CharSequence[0]);
+            CharSequence[] entriesValues = customPages.toArray(new CharSequence[0]);
+            selectedCustomPagesPreference.setEntries(entries);
+            selectedCustomPagesPreference.setEntryValues(entriesValues);
+        } else {
+            pagesIdsAndNames = prefs.getStringSet(KEY_PREF_LIKED_PAGES_IDS_AND_NAMES, new HashSet<String>());
+            List<String> pagesNames = getPageNamesList(pagesIdsAndNames);
+            CharSequence[] entries = pagesNames.toArray(new CharSequence[0]);
+            CharSequence[] entriesValues = pagesIdsAndNames.toArray(new CharSequence[0]);
             selectedPagesPreference.setEntries(entries);
             selectedPagesPreference.setEntryValues(entriesValues);
         }
@@ -154,5 +158,14 @@ public class SettingsFragment extends PreferenceFragment {
         Intent i = new Intent(getActivity(), MainActivity.class);
         startActivity(i);
         getActivity().finish();
+    }
+
+    public List<String> getPageNamesList(Set<String> idsAndNames) {
+        ArrayList<String> names = new ArrayList<>(idsAndNames.size());
+        for(String pageIdAndName : idsAndNames) {
+            String[] split = pageIdAndName.split(ID_NAME_SEPARATOR);
+            names.add(split[1]);
+        }
+        return names;
     }
 }

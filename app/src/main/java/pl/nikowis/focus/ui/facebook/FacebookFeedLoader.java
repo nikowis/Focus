@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,15 +33,13 @@ public class FacebookFeedLoader {
     private Context context;
     private FacebookPostsAdapter facebookAdapter;
     private List<FacebookPost> visiblePostsList;
-    private Set<String> selectedPageIds;
+    private Set<String> selectedPageIdsAndNames;
     private Map<String, String> nextPagesMap;
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
     private int pageCount = 10;
     private boolean loadingMoreElementsFromFacebook;
     private boolean loadedFirstRecords;
-    private Set<String> pagesIds;
-    private Set<String> pagesNames;
     private boolean usingCustomPages;
 
     public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
@@ -55,22 +52,20 @@ public class FacebookFeedLoader {
         usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
 
         if (!usingCustomPages) {
-            selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
-            pagesIds = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
-            pagesNames = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
         } else {
-            selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
         }
 
         nextPagesMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
         queuedPostsList = new ArrayList<>(pageCount * 10);
-        for (String page : selectedPageIds) {
+        for (String page : selectedPageIdsAndNames) {
             nextPagesMap.put(page, "");
             loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
-        for (String pageId : selectedPageIds) {
-            requestPagePosts(pageId);
+        for (String pageIdAndName : selectedPageIdsAndNames) {
+            requestPagePosts(pageIdAndName);
         }
     }
 
@@ -80,7 +75,7 @@ public class FacebookFeedLoader {
                 list.clear();
             }
             loadingMoreElementsFromFacebook = true;
-            for (String page : selectedPageIds) {
+            for (String page : selectedPageIdsAndNames) {
                 requestPagePosts(page);
             }
         } else if (!loadingMoreElementsFromFacebook) {
@@ -123,7 +118,6 @@ public class FacebookFeedLoader {
         return latestPostsFromEachPage;
     }
 
-    //działa poprawnie
     private Map.Entry<String, FacebookPost> getLatestPostEntrySet(Map<String, FacebookPost> latestPostsFromEachPage) {
         Iterator<Map.Entry<String, FacebookPost>> iterator = latestPostsFromEachPage.entrySet().iterator();
         Map.Entry<String, FacebookPost> latestEntrySet = iterator.next();
@@ -137,42 +131,45 @@ public class FacebookFeedLoader {
         return latestEntrySet;
     }
 
-    private void requestPagePosts(final String pageId) {
+    private void requestPagePosts(final String pageIdAndName) {
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
-        Callback<FbFeedDataResponse> callback = createCallback(pageId);
-        if (nextPagesMap.get(pageId).isEmpty()) {
-            requestManager.getPageFeed(pageId, AccessToken.getCurrentAccessToken().getToken(), callback);
+        Callback<FbFeedDataResponse> callback = createCallback(pageIdAndName);
+        if (nextPagesMap.get(pageIdAndName).isEmpty()) {
+            requestManager.getPageFeed(pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
         } else {
-            requestManager.getPageFeed(nextPagesMap.get(pageId), callback);
+            requestManager.getPageFeed(nextPagesMap.get(pageIdAndName), callback);
         }
     }
 
     @NonNull
-    private Callback<FbFeedDataResponse> createCallback(final String pageId) {
+    private Callback<FbFeedDataResponse> createCallback(final String pageIdAndName) {
         return new Callback<FbFeedDataResponse>() {
             @Override
             public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
                 Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                String pageName = getPageName(pageIdAndName);
                 if (!response.isSuccessful()) {
-                    loadedPostsMap.remove(pageId);
-                    nextPagesMap.remove(pageId);
-                    selectedPageIds.remove(pageId);
-                    Toast.makeText(context, pageId + " INCORRECT ID", Toast.LENGTH_SHORT).show();
+                    loadedPostsMap.remove(pageIdAndName);
+                    nextPagesMap.remove(pageIdAndName);
+                    selectedPageIdsAndNames.remove(pageIdAndName);
+                    Toast.makeText(context, pageName + " INCORRECT PAGE ID", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String next = response.body().paging.next;
-                nextPagesMap.put(pageId, next);
-                String pageName = getPageName(pageId);
+                nextPagesMap.put(pageIdAndName, next);
+
                 List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount * 10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     if (res.message == null || res.message.isEmpty()) {
-                        continue;
+                        postsFromResponse.add(new FacebookPost(pageName, res.id, res.story, res.date));
+                    } else {
+                        postsFromResponse.add(new FacebookPost(pageName, res.id, res.message, res.date));
                     }
-                    postsFromResponse.add(new FacebookPost(pageName, res.id, res.message, res.date));
                 }
-                loadedPostsMap.get(pageId).addAll(postsFromResponse);
+                loadedPostsMap.get(pageIdAndName).addAll(postsFromResponse);
                 loadingMoreElementsFromFacebook = false;
                 loadedFirstRecords = true;
+                facebookAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -184,29 +181,8 @@ public class FacebookFeedLoader {
         };
     }
 
-    private String getPageName(String pageId) {
-        if (usingCustomPages) {
-            return pageId;
-        }
-        int index = getIndex(pagesIds, pageId);
-        int i = 0;
-        String res = "";
-        for (String name : pagesNames) {
-            if (i == index) {
-                res = name;
-                break;
-            }
-            i++;
-        }
-        return res;
+    private String getPageName(String pageIdAndName) {
+        return pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[1];
     }
 
-    public static int getIndex(Set<? extends Object> set, Object value) {
-        int result = 0;
-        for (Object entry : set) {
-            if (entry.equals(value)) return result;
-            result++;
-        }
-        return -1;
-    }
 }
