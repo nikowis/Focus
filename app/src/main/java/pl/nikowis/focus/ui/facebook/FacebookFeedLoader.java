@@ -134,10 +134,12 @@ public class FacebookFeedLoader {
     private void requestPagePosts(final String pageIdAndName) {
         FacebookRequestManager requestManager = FacebookRequestManager.getInstance(context);
         Callback<FbFeedDataResponse> callback = createCallback(pageIdAndName);
-        if (nextPagesMap.get(pageIdAndName).isEmpty()) {
-            requestManager.getPageFeed(pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
-        } else {
-            requestManager.getPageFeed(nextPagesMap.get(pageIdAndName), callback);
+        if (nextPagesMap.get(pageIdAndName) != null) {
+            if (nextPagesMap.get(pageIdAndName).isEmpty()) {
+                requestManager.getPageFeed(pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
+            } else {
+                requestManager.getPageFeed(nextPagesMap.get(pageIdAndName), callback);
+            }
         }
     }
 

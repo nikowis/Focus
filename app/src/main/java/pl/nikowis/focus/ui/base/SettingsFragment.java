@@ -11,6 +11,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +59,11 @@ public class SettingsFragment extends PreferenceFragment {
      */
     public static final String KEY_PREF_RELOAD_FACEBOOK_LIKES = "pref_reload_facebook_likes";
 
+    /**
+     * Preference key for facebook logout button.
+     */
+    public static final String KEY_PREF_FACEBOOK_LOGOUT = "pref_facebook_logout";
+
     private Set<String> pagesIdsAndNames;
     private Set<String> customPages;
     private MultiSelectListPreference selectedPagesPreference;
@@ -63,8 +71,10 @@ public class SettingsFragment extends PreferenceFragment {
     private Preference addPagePreference;
     private CheckBoxPreference usingCustomPreference;
     private Preference reloadFacebookLikes;
+    private Preference facebookLogout;
     private boolean usingCustom;
     private SharedPreferences prefs;
+    private boolean userLoggedIn;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,10 +89,22 @@ public class SettingsFragment extends PreferenceFragment {
         reloadFacebookLikes.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                prefs.edit().remove(KEY_PREF_SELECTED_PAGES).apply();
-                prefs.edit().remove(KEY_PREF_LIKED_PAGES_IDS_AND_NAMES).apply();
+                clearPagesPreferences();
                 new FacebookLikesLoader(getActivity(), createLikesLoadedCallback()).loadAllLikes();
                 setSelectedPagesPreferenceData();
+                return true;
+            }
+        });
+        facebookLogout = findPreference(KEY_PREF_FACEBOOK_LOGOUT);
+        userLoggedIn = Profile.getCurrentProfile() != null;
+
+        facebookLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                clearPagesPreferences();
+                prefs.edit().remove(KEY_PREF_SELECTED_CUSTOM_PAGES).apply();
+                LoginManager.getInstance().logOut();
+                navigateToMainActivity();
                 return true;
             }
         });
@@ -121,6 +143,11 @@ public class SettingsFragment extends PreferenceFragment {
         });
     }
 
+    private void clearPagesPreferences() {
+        prefs.edit().remove(KEY_PREF_SELECTED_PAGES).apply();
+        prefs.edit().remove(KEY_PREF_LIKED_PAGES_IDS_AND_NAMES).apply();
+    }
+
     private FacebookLikesLoader.FinishedLoadingListener createLikesLoadedCallback() {
         return new FacebookLikesLoader.FinishedLoadingListener() {
             @Override
@@ -131,10 +158,12 @@ public class SettingsFragment extends PreferenceFragment {
     }
 
     private void setupEnabledPreferences() {
-        addPagePreference.setEnabled(usingCustom);
-        selectedCustomPagesPreference.setEnabled(usingCustom);
-        selectedPagesPreference.setEnabled(!usingCustom);
-        reloadFacebookLikes.setEnabled(!usingCustom);
+        addPagePreference.setEnabled(userLoggedIn && usingCustom);
+        selectedCustomPagesPreference.setEnabled(userLoggedIn && usingCustom);
+        selectedPagesPreference.setEnabled(userLoggedIn && !usingCustom);
+        reloadFacebookLikes.setEnabled(userLoggedIn && !usingCustom);
+        facebookLogout.setEnabled(userLoggedIn);
+        usingCustomPreference.setEnabled(userLoggedIn);
     }
 
     private void setSelectedPagesPreferenceData() {
@@ -162,7 +191,7 @@ public class SettingsFragment extends PreferenceFragment {
 
     public List<String> getPageNamesList(Set<String> idsAndNames) {
         ArrayList<String> names = new ArrayList<>(idsAndNames.size());
-        for(String pageIdAndName : idsAndNames) {
+        for (String pageIdAndName : idsAndNames) {
             String[] split = pageIdAndName.split(ID_NAME_SEPARATOR);
             names.add(split[1]);
         }

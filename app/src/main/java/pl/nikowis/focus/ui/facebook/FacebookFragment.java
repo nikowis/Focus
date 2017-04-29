@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +43,8 @@ public class FacebookFragment extends Fragment {
     RecyclerView recyclerView;
     @BindView(R.id.facebook_login_button)
     LoginButton loginButton;
+    @BindView(R.id.facebook_fab_load_more)
+    FloatingActionButton loadMorePostsButton;
 
     private FacebookFeedLoader facebookFeedLoader;
     private FacebookPostsAdapter facebookAdapter;
@@ -68,20 +71,24 @@ public class FacebookFragment extends Fragment {
             }
         });
 
-        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+        resetFacebookFeedLoader();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if (key.equals(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
-                    facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+                    resetFacebookFeedLoader();
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
                 } else if (key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
                         || key.equals(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES)) {
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
+                } else if (key.equals(SettingsFragment.KEY_PREF_FACEBOOK_LOGOUT)) {
+                    loginButton.setVisibility(View.VISIBLE);
+                    loadMorePostsButton.setVisibility(View.GONE);
+                    resetFacebookFeedLoader();
                 }
             }
         });
@@ -93,13 +100,16 @@ public class FacebookFragment extends Fragment {
         loginButton.setReadPermissions("email", "public_profile", "user_posts", "user_likes");
         loginButton.setFragment(this);
         currentProfile = Profile.getCurrentProfile();
+        loadMorePostsButton.setVisibility(View.GONE);
         if (currentProfile != null) {
             loginButton.setVisibility(View.GONE);
+            loadMorePostsButton.setVisibility(View.VISIBLE);
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
+                loadMorePostsButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getContext(), getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
                 new FacebookLikesLoader(getContext()).loadAllLikes();
             }
@@ -120,13 +130,17 @@ public class FacebookFragment extends Fragment {
         return mainFragment;
     }
 
+    private void resetFacebookFeedLoader() {
+        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+    }
+
     @OnClick(R.id.facebook_fab_load_more)
     public void loadContent() {
         facebookFeedLoader.loadContent();
     }
 
-    @OnClick(R.id.facebook_fab_add_pages)
-    public void addNewPage() {
+    @OnClick(R.id.facebook_fab_go_to_settings)
+    public void goToSettings() {
         Intent intent = new Intent(getContext(), SettingsActivity.class);
         startActivity(intent);
     }
