@@ -38,14 +38,15 @@ public class FacebookFeedLoader {
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
     private int pageCount = 10;
-    private boolean loadingMoreElementsFromFacebook;
-    private boolean loadedFirstRecords;
     private boolean usingCustomPages;
+    private ContentLoaderEventsListener contentLoaderEventsListener;
+    private int counter, currentlyLoadingPageCount;
 
-    public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter) {
+    public FacebookFeedLoader(Context context, FacebookPostsAdapter facebookAdapter, ContentLoaderEventsListener listener) {
         this.context = context;
         this.facebookAdapter = facebookAdapter;
         this.visiblePostsList = facebookAdapter.getList();
+        this.contentLoaderEventsListener = listener;
         visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -64,31 +65,24 @@ public class FacebookFeedLoader {
             nextPagesMap.put(page, "");
             loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
+        contentLoaderEventsListener.loadingMoreData();
+        currentlyLoadingPageCount = selectedPageIdsAndNames.size();
         for (String pageIdAndName : selectedPageIdsAndNames) {
             requestPagePosts(pageIdAndName);
         }
     }
 
     public void loadContent() {
-        if (!loadedFirstRecords) {
-            for (List<FacebookPost> list : loadedPostsMap.values()) {
-                list.clear();
-            }
-            loadingMoreElementsFromFacebook = true;
-            for (String page : selectedPageIdsAndNames) {
-                requestPagePosts(page);
-            }
-        } else if (!loadingMoreElementsFromFacebook) {
-            try {
-                calculateQueuedPostsList();
-                visiblePostsList.addAll(queuedPostsList);
-                queuedPostsList.clear();
-                facebookAdapter.notifyDataSetChanged();
-            } catch (IndexOutOfBoundsException e) {
-                //too fast refreshing
-                return;
-            }
+        try {
+            calculateQueuedPostsList();
+            visiblePostsList.addAll(queuedPostsList);
+            queuedPostsList.clear();
+            facebookAdapter.notifyDataSetChanged();
+        } catch (IndexOutOfBoundsException e) {
+            //too fast refreshing
+            return;
         }
+
     }
 
     private void calculateQueuedPostsList() {
@@ -110,7 +104,7 @@ public class FacebookFeedLoader {
         for (String key : loadedPostsMap.keySet()) {
             List<FacebookPost> facebookPosts = loadedPostsMap.get(key);
             if (facebookPosts.size() < pageCount + 1) {
-                loadingMoreElementsFromFacebook = true;
+
                 requestPagePosts(key);
             }
             latestPostsFromEachPage.put(key, facebookPosts.get(0));
@@ -138,6 +132,8 @@ public class FacebookFeedLoader {
             if (nextPagesMap.get(pageIdAndName).isEmpty()) {
                 requestManager.getPageFeed(pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
             } else {
+                contentLoaderEventsListener.loadingMoreData();
+                currentlyLoadingPageCount++;
                 requestManager.getPageFeed(nextPagesMap.get(pageIdAndName), callback);
             }
         }
@@ -148,7 +144,8 @@ public class FacebookFeedLoader {
         return new Callback<FbFeedDataResponse>() {
             @Override
             public void onResponse(Call<FbFeedDataResponse> call, Response<FbFeedDataResponse> response) {
-                Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                counter++;
+
                 String pageName = getPageName(pageIdAndName);
                 if (!response.isSuccessful()) {
                     loadedPostsMap.remove(pageIdAndName);
@@ -169,9 +166,11 @@ public class FacebookFeedLoader {
                     }
                 }
                 loadedPostsMap.get(pageIdAndName).addAll(postsFromResponse);
-                loadingMoreElementsFromFacebook = false;
-                loadedFirstRecords = true;
-                facebookAdapter.notifyDataSetChanged();
+                if (counter >= currentlyLoadingPageCount) {
+                    contentLoaderEventsListener.readyToDisplay();
+                    counter = 0;
+                    currentlyLoadingPageCount = 0;
+                }
             }
 
             @Override
@@ -187,4 +186,9 @@ public class FacebookFeedLoader {
         return pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[1];
     }
 
+    public interface ContentLoaderEventsListener {
+        void readyToDisplay();
+
+        void loadingMoreData();
+    }
 }

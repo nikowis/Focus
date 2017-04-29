@@ -24,6 +24,9 @@ import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -51,6 +54,8 @@ public class FacebookFragment extends Fragment {
     private Unbinder unbinder;
     private CallbackManager callbackManager;
     private Profile currentProfile;
+    private boolean usingCustomPages;
+    private Set<String> selectedPages;
 
     @Nullable
     @Override
@@ -73,7 +78,13 @@ public class FacebookFragment extends Fragment {
 
         resetFacebookFeedLoader();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
+        if (!usingCustomPages) {
+            selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+        } else {
+            selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+        }
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -81,8 +92,10 @@ public class FacebookFragment extends Fragment {
                     resetFacebookFeedLoader();
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
+                    selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
                 } else if (key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
                         || key.equals(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES)) {
+                    selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
                 } else if (key.equals(SettingsFragment.KEY_PREF_FACEBOOK_LOGOUT)) {
@@ -103,13 +116,11 @@ public class FacebookFragment extends Fragment {
         loadMorePostsButton.setVisibility(View.GONE);
         if (currentProfile != null) {
             loginButton.setVisibility(View.GONE);
-            loadMorePostsButton.setVisibility(View.VISIBLE);
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
-                loadMorePostsButton.setVisibility(View.VISIBLE);
                 Toast.makeText(getContext(), getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
                 new FacebookLikesLoader(getContext()).loadAllLikes();
             }
@@ -131,7 +142,24 @@ public class FacebookFragment extends Fragment {
     }
 
     private void resetFacebookFeedLoader() {
-        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
+            @Override
+            public void readyToDisplay() {
+                Toast.makeText(getActivity(), "Ready!", Toast.LENGTH_SHORT).show();
+
+                if(currentProfile != null && loadMorePostsButton != null) {
+                    loadMorePostsButton.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void loadingMoreData() {
+                Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
+                if(loadMorePostsButton!=null){
+                    loadMorePostsButton.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @OnClick(R.id.facebook_fab_load_more)
