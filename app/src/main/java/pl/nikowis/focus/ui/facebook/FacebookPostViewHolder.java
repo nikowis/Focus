@@ -19,7 +19,8 @@ public class FacebookPostViewHolder extends RecyclerView.ViewHolder {
     protected TextView mDescriptionView;
     @BindView(R.id.item_date)
     protected TextView mDateView;
-
+    @BindView(R.id.item_id)
+    protected TextView id;
 
     public FacebookPostViewHolder(View itemView) {
         super(itemView);

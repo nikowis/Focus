@@ -2,15 +2,18 @@ package pl.nikowis.focus.ui.facebook;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -50,7 +53,20 @@ public class FacebookFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        facebookAdapter = new FacebookPostsAdapter(getContext());
+        facebookAdapter = new FacebookPostsAdapter(getActivity(), new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                try {
+                    TextView idTextView = (TextView) v.findViewById(R.id.item_id);
+                    String id = idTextView.getText().toString();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://post/"+id));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("ERROR facebook intent :", e.getMessage());
+                }
+                return true;
+            }
+        });
 
         facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
 
@@ -62,7 +78,7 @@ public class FacebookFragment extends Fragment {
                     facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                } else if(key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
+                } else if (key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
                         || key.equals(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES)) {
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
