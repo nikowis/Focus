@@ -1,5 +1,6 @@
 package pl.nikowis.focus.ui.base;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -122,7 +123,7 @@ public class SettingsFragment extends PreferenceFragment {
         return new FacebookLikesLoader.FinishedLoadingListener() {
             @Override
             public void finished() {
-                setSelectedPagesPreferenceData();
+                navigateToMainActivity();
             }
         };
     }
@@ -147,5 +148,11 @@ public class SettingsFragment extends PreferenceFragment {
             selectedPagesPreference.setEntries(entries);
             selectedPagesPreference.setEntryValues(entriesValues);
         }
+    }
+
+    private void navigateToMainActivity() {
+        Intent i = new Intent(getActivity(), MainActivity.class);
+        startActivity(i);
+        getActivity().finish();
     }
 }
