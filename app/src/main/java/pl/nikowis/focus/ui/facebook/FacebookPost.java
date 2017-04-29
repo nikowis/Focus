@@ -10,11 +10,13 @@ public class FacebookPost {
     private String pageName;
     private String description;
     private Date date;
+    private String id;
 
-    public FacebookPost(String pageName, String description, Date date) {
+    public FacebookPost(String pageName, String id, String description, Date date) {
         this.pageName = pageName;
         this.description = description;
         this.date = date;
+        this.id = id;
     }
 
     public String getPageName() {
@@ -39,5 +41,9 @@ public class FacebookPost {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getId() {
+        return id;
     }
 }

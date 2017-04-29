@@ -54,7 +54,7 @@ public class FacebookFeedLoader {
 
         usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
 
-        if(!usingCustomPages) {
+        if (!usingCustomPages) {
             selectedPageIds = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
             pagesIds = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_IDS, new HashSet<String>());
             pagesNames = prefs.getStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_NAMES, new HashSet<String>());
@@ -165,7 +165,10 @@ public class FacebookFeedLoader {
                 String pageName = getPageName(pageId);
                 List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount * 10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
-                    postsFromResponse.add(new FacebookPost(pageName, res.message, res.date));
+                    if (res.message == null || res.message.isEmpty()) {
+                        continue;
+                    }
+                    postsFromResponse.add(new FacebookPost(pageName, res.id, res.message, res.date));
                 }
                 loadedPostsMap.get(pageId).addAll(postsFromResponse);
                 loadingMoreElementsFromFacebook = false;
@@ -182,14 +185,14 @@ public class FacebookFeedLoader {
     }
 
     private String getPageName(String pageId) {
-        if(usingCustomPages) {
+        if (usingCustomPages) {
             return pageId;
         }
         int index = getIndex(pagesIds, pageId);
         int i = 0;
         String res = "";
-        for (String name:pagesNames) {
-            if(i==index) {
+        for (String name : pagesNames) {
+            if (i == index) {
                 res = name;
                 break;
             }
@@ -200,7 +203,7 @@ public class FacebookFeedLoader {
 
     public static int getIndex(Set<? extends Object> set, Object value) {
         int result = 0;
-        for (Object entry:set) {
+        for (Object entry : set) {
             if (entry.equals(value)) return result;
             result++;
         }
