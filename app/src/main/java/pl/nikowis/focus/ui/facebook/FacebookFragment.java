@@ -58,8 +58,14 @@ public class FacebookFragment extends Fragment {
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if(key.equals(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
+                if (key.equals(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
                     facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter);
+                    facebookAdapter.getList().clear();
+                    facebookAdapter.notifyDataSetChanged();
+                } else if(key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
+                        || key.equals(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES)) {
+                    facebookAdapter.getList().clear();
+                    facebookAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -79,8 +85,7 @@ public class FacebookFragment extends Fragment {
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(getContext(), getString(R.string.fb_login_success_toast) + loginResult.getAccessToken().toString(), Toast.LENGTH_SHORT).show();
-                FacebookLikesLoader likesLoader = new FacebookLikesLoader(getContext());
-                likesLoader.loadAllLikes();
+                new FacebookLikesLoader(getContext()).loadAllLikes();
             }
 
             @Override

@@ -2,6 +2,7 @@ package pl.nikowis.focus.ui.base;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import pl.nikowis.focus.R;
@@ -9,6 +10,7 @@ import pl.nikowis.focus.ui.facebook.FacebookLikesLoader;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final int SPLASH_DISPLAY_LENGTH = 1000;
     private FacebookLikesLoader likesLoader;
 
     @Override
@@ -16,14 +18,13 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        likesLoader = new FacebookLikesLoader(getApplicationContext(), new FacebookLikesLoader.FinishedLoadingListener() {
+
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void finished() {
+            public void run() {
                 startMainActivity();
             }
-        });
-
-        likesLoader.loadAllLikes();
+        }, SPLASH_DISPLAY_LENGTH);
     }
 
     private void startMainActivity() {

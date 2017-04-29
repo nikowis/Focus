@@ -18,6 +18,9 @@
         <MultiSelectListPreference
             android:key="pref_select_custom_pages"
             android:title="Select custom pages"/>
+        <Preference android:title="Reload facebook likes"
+            android:key="pref_reload_facebook_likes" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
