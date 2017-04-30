@@ -65,10 +65,14 @@ public class FacebookFeedLoader {
             nextPagesMap.put(page, "");
             loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
-        contentLoaderEventsListener.loadingMoreData();
-        currentlyLoadingPageCount = selectedPageIdsAndNames.size();
-        for (String pageIdAndName : selectedPageIdsAndNames) {
-            requestPagePosts(pageIdAndName);
+        if(selectedPageIdsAndNames.isEmpty()) {
+            Toast.makeText(context, "No pages selected", Toast.LENGTH_SHORT).show();
+        } else {
+            contentLoaderEventsListener.loadingMoreData();
+            currentlyLoadingPageCount = selectedPageIdsAndNames.size();
+            for (String pageIdAndName : selectedPageIdsAndNames) {
+                requestPagePosts(pageIdAndName);
+            }
         }
     }
 
