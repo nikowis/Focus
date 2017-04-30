@@ -6,22 +6,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/facebook_login_button"
+    <Button
+        android:id="@+id/instagram_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Login"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:layout_marginTop="30dp" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/facebook_post_list"
+        android:id="@+id/instagram_post_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/layout_facebook_post_item" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/facebook_fab_load_more"
+        android:id="@+id/instagram_fab_load_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -31,7 +32,7 @@
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/facebook_fab_go_to_settings"
+        android:id="@+id/instagram_fab_go_to_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -42,7 +42,7 @@ import pl.nikowis.focus.ui.base.SettingsFragment;
 
 public class FacebookFragment extends Fragment {
 
-    @BindView(R.id.shopping_list)
+    @BindView(R.id.facebook_post_list)
     RecyclerView recyclerView;
     @BindView(R.id.facebook_login_button)
     LoginButton loginButton;

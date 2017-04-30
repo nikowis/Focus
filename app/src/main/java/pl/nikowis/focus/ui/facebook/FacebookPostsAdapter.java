@@ -1,8 +1,6 @@
 package pl.nikowis.focus.ui.facebook;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,20 +31,20 @@ public class FacebookPostsAdapter extends RecyclerView.Adapter<FacebookPostViewH
 
     @Override
     public FacebookPostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_media_item, null);
-        FacebookPostViewHolder shoppingViewHolder = new FacebookPostViewHolder(view);
-        return shoppingViewHolder;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_facebook_post_item, null);
+        FacebookPostViewHolder postViewHolder = new FacebookPostViewHolder(view);
+        return postViewHolder;
     }
 
     @Override
     public void onBindViewHolder(FacebookPostViewHolder holder, int position) {
-        FacebookPost shoppingItem = list.get(position);
+        FacebookPost post = list.get(position);
         holder.itemView.setOnLongClickListener(itemClickListener);
-        holder.mTitleView.setText(shoppingItem.getPageName());
-        holder.id.setText(shoppingItem.getId());
-        holder.mDescriptionView.setText(shoppingItem.getDescription());
-        if(shoppingItem.getDate()!= null) {
-            holder.mDateView.setText(ft.format(shoppingItem.getDate()));
+        holder.mTitleView.setText(post.getPageName());
+        holder.id.setText(post.getId());
+        holder.mDescriptionView.setText(post.getDescription());
+        if(post.getDate()!= null) {
+            holder.mDateView.setText(ft.format(post.getDate()));
         } else {
             holder.mDateView.setText("");
         }
