@@ -16,9 +16,10 @@ import retrofit2.Callback;
 public class FacebookRequestManager extends ApiRequestManager {
 
     private static FacebookRequestManager facebookRequestManager;
+    public static final String BASE_URL = "https://graph.facebook.com";
 
     private FacebookRequestManager(Context context) {
-        super(context, "https://graph.facebook.com");
+        super(context, BASE_URL);
     }
 
     public static FacebookRequestManager getInstance(Context context) {

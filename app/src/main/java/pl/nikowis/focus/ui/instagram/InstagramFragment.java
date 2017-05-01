@@ -11,12 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
+import pl.nikowis.focus.rest.instagram.InstagramRequestManager;
+import pl.nikowis.focus.rest.instagram.withoutRetrofit.InstagramApp;
 import pl.nikowis.focus.ui.base.SettingsActivity;
 
 /**
@@ -31,10 +34,6 @@ public class InstagramFragment extends Fragment {
     Button loginButton;
     @BindView(R.id.instagram_fab_load_more)
     FloatingActionButton loadMorePostsButton;
-
-    public static final String CLIENT_ID = "f4ea7842b9254c64804f34acb28a5fe9";
-    public static final String CLIENT_SECRET = "11e41b6c8e94435fa6e4cff05b10957f";
-    public static final String CALLBACK_URL = "redirect uri here";
 
     private InstagramFeedLoader instagramFeedLoader;
     private InstagramPostAdapter instagramAdapter;
@@ -71,6 +70,38 @@ public class InstagramFragment extends Fragment {
     public void goToSettings() {
         Intent intent = new Intent(getContext(), SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.instagram_login_button)
+    public void loginInstagram() {
+//        InstagramRequestManager requestManager = InstagramRequestManager.getInstance(getContext());
+//        Intent intent = new Intent(
+//                Intent.ACTION_VIEW,
+//
+//                Uri.parse(
+//                        InstagramRequestManager.BASE_URL + "/oauth/authorize/"
+//                                + "?client_id=" + InstagramRequestManager.CLIENT_ID
+//                                + "&redirect_uri=" + InstagramRequestManager.CALLBACK_URL
+//                                + "&response_type=code"
+//                )
+//        );
+//        startActivity(intent);
+
+        final InstagramApp mApp = new InstagramApp(getContext(), InstagramRequestManager.CLIENT_ID,
+                InstagramRequestManager.CLIENT_SECRET, InstagramRequestManager.CALLBACK_URL);
+        mApp.setListener(new InstagramApp.OAuthAuthenticationListener() {
+
+            @Override
+            public void onSuccess() {
+                loginButton.setText("Disconnect");
+            }
+
+            @Override
+            public void onFail(String error) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mApp.authorize();
     }
 
     @Override

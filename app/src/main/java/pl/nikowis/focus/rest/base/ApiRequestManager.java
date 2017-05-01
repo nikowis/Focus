@@ -1,6 +1,8 @@
 package pl.nikowis.focus.rest.base;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -8,6 +10,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -20,14 +23,22 @@ public abstract class ApiRequestManager {
     private Context mContext;
     private String mUrl;
 
-    private static ApiRequestManager sApiRequestManager = null;
-
     protected ApiRequestManager(Context context, String baseUrl) {
         this.mContext = context;
         mUrl = baseUrl;
     }
 
-    protected Retrofit createRestAdapter() {
+    @NonNull
+    private Retrofit.Builder createBaseRetrofitBuilder() {
+        Retrofit.Builder restAdapter = new Retrofit.Builder();
+        restAdapter.baseUrl(mUrl);
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+        restAdapter.addConverterFactory(GsonConverterFactory.create(gson));
+        return restAdapter;
+    }
+
+    @NonNull
+    private OkHttpClient.Builder createBaseHttpBuilder() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
@@ -41,20 +52,45 @@ public abstract class ApiRequestManager {
             }
         });
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        return new OkHttpClient.Builder()
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(120, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
-                .build();
+                .addInterceptor(interceptor);
+    }
 
-        Retrofit.Builder restAdapter = new Retrofit.Builder();
-        restAdapter.baseUrl(mUrl);
+    protected Retrofit createRestAdapter() {
+        Retrofit.Builder restAdapter = createBaseRetrofitBuilder();
+        OkHttpClient okHttpClient = createBaseHttpBuilder().build();
         restAdapter.client(okHttpClient);
-        Gson gson=  new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
-        restAdapter.addConverterFactory(GsonConverterFactory.create(gson));
         return restAdapter.build();
     }
+
+    protected Retrofit createRestAdapter(String clientId, String clientSecret) {
+        if (!TextUtils.isEmpty(clientId) && !TextUtils.isEmpty(clientSecret)) {
+            String authToken = Credentials.basic(clientId, clientSecret);
+            return createRestAdapter(authToken);
+        }
+
+        return null;
+    }
+
+    protected Retrofit createRestAdapter(final String authToken) {
+        Retrofit.Builder builder = createBaseRetrofitBuilder();
+        OkHttpClient.Builder okHttpClient = createBaseHttpBuilder();
+
+        Retrofit retrofit = null;
+        if (!TextUtils.isEmpty(authToken)) {
+            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
+            if (!okHttpClient.interceptors().contains(interceptor)) {
+                okHttpClient.addInterceptor(interceptor);
+                builder.client(okHttpClient.build());
+                retrofit = builder.build();
+            }
+        }
+
+        return retrofit;
+    }
+
 
 }
