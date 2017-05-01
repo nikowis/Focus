@@ -41,10 +41,9 @@ public class InstagramPostAdapter extends RecyclerView.Adapter<InstagramPostView
         InstagramPost post = list.get(position);
         holder.itemView.setOnLongClickListener(itemClickListener);
         holder.mTitleView.setText(post.getTitle());
-        holder.id.setText(post.getId());
+        holder.url.setText(post.getLink());
         holder.mDescriptionView.setText(post.getDescription());
         holder.itemView.setOnLongClickListener(itemClickListener);
-
     }
 
     @Override

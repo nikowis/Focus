@@ -34,7 +34,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
 import pl.nikowis.focus.ui.base.SettingsActivity;
-import pl.nikowis.focus.ui.base.SettingsFragment;
 
 
 /**
@@ -100,7 +99,7 @@ public class FacebookFragment extends Fragment {
                     selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                } else if (key.equals(FacebookSettings.KEY_PREF_FACEBOOK_LOGOUT)) {
+                } else if (key.equals(FacebookSettings.KEY_PREF_LOGOUT)) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetFacebookFeedLoader();

@@ -6,7 +6,8 @@ import com.google.gson.annotations.SerializedName;
  * Created by Nikodem on 4/30/2017.
  */
 
-public class InstagramLoginResponse {
+public class InstaLoginResponse {
+
     @SerializedName("access_token")
     public String accessToken;
 
@@ -20,6 +21,5 @@ public class InstagramLoginResponse {
         public String username;
         @SerializedName("full_name")
         public String fullName;
-
     }
 }

@@ -14,7 +14,6 @@ import com.facebook.login.LoginManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,12 +54,12 @@ public class FacebookSettings {
     /**
      * Preference key for reload facebook likes.
      */
-    public static final String KEY_PREF_RELOAD_FACEBOOK_LIKES = "pref_facebook_reload_likes";
+    public static final String KEY_PREF_RELOAD_LIKES = "pref_facebook_reload_likes";
 
     /**
      * Preference key for facebook logout button.
      */
-    public static final String KEY_PREF_FACEBOOK_LOGOUT = "pref_facebook_logout";
+    public static final String KEY_PREF_LOGOUT = "pref_facebook_logout";
 
     private Set<String> pagesIdsAndNames;
     private Set<String> customPages;
@@ -85,7 +84,7 @@ public class FacebookSettings {
         selectedPagesPreference = (MultiSelectListPreference) fragment.findPreference(KEY_PREF_SELECTED_PAGES);
         selectedCustomPagesPreference = (MultiSelectListPreference) fragment.findPreference(KEY_PREF_SELECTED_CUSTOM_PAGES);
         usingCustomPreference = (CheckBoxPreference) fragment.findPreference(KEY_PREF_USING_CUSTOM_PAGES);
-        reloadFacebookLikes = fragment.findPreference(KEY_PREF_RELOAD_FACEBOOK_LIKES);
+        reloadFacebookLikes = fragment.findPreference(KEY_PREF_RELOAD_LIKES);
         reloadFacebookLikes.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -95,7 +94,7 @@ public class FacebookSettings {
                 return true;
             }
         });
-        facebookLogout = settingsFragment.findPreference(KEY_PREF_FACEBOOK_LOGOUT);
+        facebookLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
         userLoggedIn = Profile.getCurrentProfile() != null;
 
         facebookLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

@@ -30,10 +30,10 @@ public class InstagramRequestManager extends ApiRequestManager {
         return instagramRequestManager;
     }
 
-    private void exchangeCodeForToken(String code, Callback<InstagramLoginResponse> callback) {
+    private void exchangeCodeForToken(String code, Callback<InstaLoginResponse> callback) {
         final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
 
-        Call<InstagramLoginResponse> call = instagramRequests.getTokenWithCodeEncoded(
+        Call<InstaLoginResponse> call = instagramRequests.getTokenWithCodeEncoded(
                 CLIENT_ID
                 , CLIENT_SECRET
                 , "authorization_code"
@@ -44,11 +44,12 @@ public class InstagramRequestManager extends ApiRequestManager {
         call.enqueue(callback);
     }
 
-    public void login(final Callback<InstagramLoginResponse> callback) {
+    public void login(final Callback<InstaLoginResponse> callback) {
         String url = BASE_URL + "/oauth/authorize/"
                 + "?client_id=" + CLIENT_ID
                 + "&redirect_uri=" + REDIRECT_URI
-                + "&response_type=code";
+                + "&response_type=code"
+                + "&scope=basic+public_content+follower_list";
         InstagramLoginDialog mDialog = new InstagramLoginDialog(this.mContext, url, new InstagramLoginDialog.OAuthDialogListener() {
             @Override
             public void onComplete(String code) {
@@ -61,5 +62,30 @@ public class InstagramRequestManager extends ApiRequestManager {
             }
         });
         mDialog.show();
+    }
+
+
+    public void getUserFeed(final String pageName, final String accessToken, final Callback<InstaPostsDataResponse> callback) {
+        final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
+        Call<InstaPostsDataResponse> call = instagramRequests.getUserFeed(pageName, accessToken);
+        call.enqueue(callback);
+    }
+
+    public void getUserFeed(final String fullUrl, final Callback<InstaPostsDataResponse> callback) {
+        final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
+        Call<InstaPostsDataResponse> call = instagramRequests.getUserFeed(fullUrl);
+        call.enqueue(callback);
+    }
+
+    public void getFollowedUsers(final String accesqsToken, final Callback<InstaFollowsDataResponse> callback) {
+        final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
+        Call<InstaFollowsDataResponse> call = instagramRequests.getFollowedUsers(accesqsToken);
+        call.enqueue(callback);
+    }
+
+    public void getNextFollowedUsers(final String fullUrl, final Callback<InstaFollowsDataResponse> callback) {
+        final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
+        Call<InstaFollowsDataResponse> call = instagramRequests.getNextFollowedUsers(fullUrl);
+        call.enqueue(callback);
     }
 }

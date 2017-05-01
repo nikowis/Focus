@@ -15,14 +15,34 @@
         <EditTextPreference
             android:key="pref_facebook_add_pages"
             android:title="Add custom page"
-            android:defaultValue=""
             android:inputType="text"/>
         <MultiSelectListPreference
             android:key="pref_facebook_select_custom_pages"
             android:title="Select custom pages"/>
         <Preference android:title="Logout from facebook"
             android:key="pref_facebook_logout" />
-
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_instagram_category_settings"
+        android:title="Instagram">
+        <MultiSelectListPreference
+            android:key="pref_instagram_select_users"
+            android:title="Select users"/>
+        <Preference android:title="Reload instagram follows"
+            android:key="pref_instagram_reload_follows" />
+        <CheckBoxPreference
+            android:key="pref_instagram_using_custom_users"
+            android:title="Custom users"
+            android:defaultValue="false"/>
+        <EditTextPreference
+            android:key="pref_instagram_add_users"
+            android:title="Add custom user"
+            android:inputType="text"/>
+        <MultiSelectListPreference
+            android:key="pref_instagram_select_custom_users"
+            android:title="Select custom users"/>
+        <Preference android:title="Logout from instagram"
+            android:key="pref_instagram_logout" />
     </PreferenceCategory>
 
 </PreferenceScreen>

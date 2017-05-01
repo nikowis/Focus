@@ -20,8 +20,8 @@ public class InstagramPostViewHolder extends RecyclerView.ViewHolder {
     protected TextView mDescriptionView;
     @BindView(R.id.instagram_item_date)
     protected TextView mDateView;
-    @BindView(R.id.instagram_item_id)
-    protected TextView id;
+    @BindView(R.id.instagram_item_url)
+    protected TextView url;
 
     public InstagramPostViewHolder(View itemView) {
         super(itemView);
