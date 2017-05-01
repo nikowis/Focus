@@ -48,7 +48,7 @@ public class InstagramFragment extends Fragment {
     FloatingActionButton loadMorePostsButton;
 
     private InstagramFeedLoader instagramFeedLoader;
-    private InstagramPostAdapter instagramAdapter;
+    private InstagramPostsAdapter instagramAdapter;
     private Unbinder unbinder;
     private String authToken;
     private boolean usingCustomPages;
@@ -59,7 +59,7 @@ public class InstagramFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         context = getContext();
-        instagramAdapter = new InstagramPostAdapter(getContext(), new View.OnLongClickListener() {
+        instagramAdapter = new InstagramPostsAdapter(getContext(), new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 try {
@@ -143,6 +143,7 @@ public class InstagramFragment extends Fragment {
                 prefs.edit().putString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, authToken).apply();
                 prefs.edit().putString(InstagramSettings.KEY_PREF_INSTAGRAM_USER_ID, body.user.id).apply();
                 instagramAdapter.notifyDataSetChanged();
+                new InstagramFollowsLoader(context).loadAllFollows();
                 loginButton.setVisibility(View.GONE);
             }
 

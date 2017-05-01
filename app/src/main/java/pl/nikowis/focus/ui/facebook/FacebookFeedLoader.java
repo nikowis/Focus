@@ -19,7 +19,6 @@ import java.util.Set;
 
 import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
 import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
-import pl.nikowis.focus.ui.base.SettingsFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,7 +36,7 @@ public class FacebookFeedLoader {
     private Map<String, String> nextPagesMap;
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
-    private int pageCount = 10;
+    private static final int PAGE_COUNT = 10;
     private boolean usingCustomPages;
     private ContentLoaderEventsListener contentLoaderEventsListener;
     private int counter, currentlyLoadingPageCount;
@@ -60,12 +59,12 @@ public class FacebookFeedLoader {
 
         nextPagesMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
-        queuedPostsList = new ArrayList<>(pageCount * 10);
+        queuedPostsList = new ArrayList<>(PAGE_COUNT * 10);
         for (String page : selectedPageIdsAndNames) {
             nextPagesMap.put(page, "");
-            loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
+            loadedPostsMap.put(page, new ArrayList<FacebookPost>(PAGE_COUNT * 10));
         }
-        if(selectedPageIdsAndNames.isEmpty()) {
+        if (selectedPageIdsAndNames.isEmpty()) {
             Toast.makeText(context, "No pages selected", Toast.LENGTH_SHORT).show();
         } else {
             contentLoaderEventsListener.loadingMoreData();
@@ -78,10 +77,14 @@ public class FacebookFeedLoader {
 
     public void loadContent() {
         try {
-            calculateQueuedPostsList();
-            visiblePostsList.addAll(queuedPostsList);
-            queuedPostsList.clear();
-            facebookAdapter.notifyDataSetChanged();
+            if (loadedPostsMap.size() > 0) {
+                calculateQueuedPostsList();
+                visiblePostsList.addAll(queuedPostsList);
+                queuedPostsList.clear();
+                facebookAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(context, "Nothing to load", Toast.LENGTH_SHORT).show();
+            }
         } catch (IndexOutOfBoundsException e) {
             //too fast refreshing
             return;
@@ -92,13 +95,21 @@ public class FacebookFeedLoader {
     private void calculateQueuedPostsList() {
         Map<String, FacebookPost> latestPostsFromEachPage = constructLatestsPostsMap();
 
-        for (int i = 0; i < pageCount; i++) {
+        for (int i = 0; i < PAGE_COUNT; i++) {
             Map.Entry<String, FacebookPost> latest = getLatestPostEntrySet(latestPostsFromEachPage);
+            if (latest == null) {
+                break;
+            }
             queuedPostsList.add(latest.getValue());
             List<FacebookPost> remainingPagePosts = loadedPostsMap.get(latest.getKey());
             remainingPagePosts.remove(0);
-            latestPostsFromEachPage.put(latest.getKey(), remainingPagePosts.get(0));
-
+            if (remainingPagePosts.size() > 0) {
+                latestPostsFromEachPage.put(latest.getKey(), remainingPagePosts.get(0));
+            } else {
+                latestPostsFromEachPage.remove(latest.getKey());
+                loadedPostsMap.remove(latest.getKey());
+                nextPagesMap.remove(latest.getKey());
+            }
         }
     }
 
@@ -107,7 +118,7 @@ public class FacebookFeedLoader {
         Map<String, FacebookPost> latestPostsFromEachPage = new LinkedHashMap<>();
         for (String key : loadedPostsMap.keySet()) {
             List<FacebookPost> facebookPosts = loadedPostsMap.get(key);
-            if (facebookPosts.size() < pageCount + 1) {
+            if (facebookPosts.size() < PAGE_COUNT + 1) {
 
                 requestPagePosts(key);
             }
@@ -118,14 +129,17 @@ public class FacebookFeedLoader {
 
     private Map.Entry<String, FacebookPost> getLatestPostEntrySet(Map<String, FacebookPost> latestPostsFromEachPage) {
         Iterator<Map.Entry<String, FacebookPost>> iterator = latestPostsFromEachPage.entrySet().iterator();
-        Map.Entry<String, FacebookPost> latestEntrySet = iterator.next();
-        while (iterator.hasNext()) {
-            Map.Entry<String, FacebookPost> next = iterator.next();
-            if (latestEntrySet.getValue().getDate().compareTo(next.getValue().getDate()) < 0) {
-                latestEntrySet = next;
+        Map.Entry<String, FacebookPost> latestEntrySet = null;
+        if (iterator.hasNext()) {
+            latestEntrySet = iterator.next();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, FacebookPost> next = iterator.next();
+                if (latestEntrySet.getValue().getDate().compareTo(next.getValue().getDate()) < 0) {
+                    latestEntrySet = next;
+                }
             }
         }
-
         return latestEntrySet;
     }
 
@@ -161,7 +175,7 @@ public class FacebookFeedLoader {
                 String next = response.body().paging.next;
                 nextPagesMap.put(pageIdAndName, next);
 
-                List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount * 10);
+                List<FacebookPost> postsFromResponse = new ArrayList<>(PAGE_COUNT * 10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     if (res.message == null || res.message.isEmpty()) {
                         postsFromResponse.add(new FacebookPost(pageName, res.id, res.story, res.date));

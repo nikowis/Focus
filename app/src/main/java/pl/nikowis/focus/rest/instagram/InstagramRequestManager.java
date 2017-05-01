@@ -65,21 +65,21 @@ public class InstagramRequestManager extends ApiRequestManager {
     }
 
 
-    public void getUserFeed(final String pageName, final String accessToken, final Callback<InstaPostsDataResponse> callback) {
+    public void getUserFeed(final String userId, final String authToken, final Callback<InstaFeedDataResponse> callback) {
         final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
-        Call<InstaPostsDataResponse> call = instagramRequests.getUserFeed(pageName, accessToken);
+        Call<InstaFeedDataResponse> call = instagramRequests.getUserFeed(userId, authToken);
         call.enqueue(callback);
     }
 
-    public void getUserFeed(final String fullUrl, final Callback<InstaPostsDataResponse> callback) {
+    public void getUserFeed(final String fullUrl, final Callback<InstaFeedDataResponse> callback) {
         final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
-        Call<InstaPostsDataResponse> call = instagramRequests.getUserFeed(fullUrl);
+        Call<InstaFeedDataResponse> call = instagramRequests.getUserFeed(fullUrl);
         call.enqueue(callback);
     }
 
-    public void getFollowedUsers(final String accesqsToken, final Callback<InstaFollowsDataResponse> callback) {
+    public void getFollowedUsers(final String authToken, final Callback<InstaFollowsDataResponse> callback) {
         final InstagramRequests instagramRequests = createRestAdapter().create(InstagramRequests.class);
-        Call<InstaFollowsDataResponse> call = instagramRequests.getFollowedUsers(accesqsToken);
+        Call<InstaFollowsDataResponse> call = instagramRequests.getFollowedUsers(authToken);
         call.enqueue(callback);
     }
 

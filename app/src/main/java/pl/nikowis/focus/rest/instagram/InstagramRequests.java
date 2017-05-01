@@ -29,12 +29,12 @@ public interface InstagramRequests {
     Call<InstaFollowsDataResponse> getFollowedUsers(@Query("access_token") String accessToken);
 
     @GET("/v1/users/{user_id}/media/recent")
-    Call<InstaPostsDataResponse> getUserFeed(@Path("user_id") String userId, @Query("access_token") String accessToken);
+    Call<InstaFeedDataResponse> getUserFeed(@Path("user_id") String userId, @Query("access_token") String accessToken);
 
     @GET
     Call<InstaFollowsDataResponse> getNextFollowedUsers(@Url String fullUrl);
 
     @GET
-    Call<InstaPostsDataResponse> getUserFeed(@Url String fullUrl);
+    Call<InstaFeedDataResponse> getUserFeed(@Url String fullUrl);
 }
 

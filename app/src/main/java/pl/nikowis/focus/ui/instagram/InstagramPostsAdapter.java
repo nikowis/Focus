@@ -16,14 +16,14 @@ import pl.nikowis.focus.R;
  * Created by Nikodem on 4/30/2017.
  */
 
-public class InstagramPostAdapter extends RecyclerView.Adapter<InstagramPostViewHolder> {
+public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostViewHolder> {
 
     private List<InstagramPost> list;
     private Context context;
     private SimpleDateFormat ft;
     private View.OnLongClickListener itemClickListener;
 
-    public InstagramPostAdapter(Context context, View.OnLongClickListener itemClickListener) {
+    public InstagramPostsAdapter(Context context, View.OnLongClickListener itemClickListener) {
         this.context = context;
         this.itemClickListener = itemClickListener;
         list = new ArrayList<>();
