@@ -14,6 +14,7 @@ import com.facebook.login.LoginManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,23 +29,23 @@ public class FacebookSettings {
     /**
      * Preference key for adding new custom pages.
      */
-    public static final String KEY_PREF_ADD_PAGE = "pref_add_pages";
+    public static final String KEY_PREF_ADD_PAGE = "pref_facebook_add_pages";
     /**
      * Preference key for selected regular pages.
      */
-    public static final String KEY_PREF_SELECTED_PAGES = "pref_select_pages";
+    public static final String KEY_PREF_SELECTED_PAGES = "pref_facebook_select_pages";
     /**
      * Preference key for selected custom pages.
      */
-    public static final String KEY_PREF_SELECTED_CUSTOM_PAGES = "pref_select_custom_pages";
+    public static final String KEY_PREF_SELECTED_CUSTOM_PAGES = "pref_facebook_select_custom_pages";
     /**
      * Preference key for boolean describing if custom pages are being used.
      */
-    public static final String KEY_PREF_USING_CUSTOM_PAGES = "pref_using_custom_pages";
+    public static final String KEY_PREF_USING_CUSTOM_PAGES = "pref_facebook_using_custom_pages";
     /**
      * Preference key for liked pages ids concatenated with their names.
      */
-    public static final String KEY_PREF_LIKED_PAGES_IDS_AND_NAMES = "pref_liked_pages_ids_and_names";
+    public static final String KEY_PREF_LIKED_PAGES_IDS_AND_NAMES = "pref_facebook_liked_pages_ids_and_names";
 
     /**
      * Id - name separator.
@@ -54,7 +55,7 @@ public class FacebookSettings {
     /**
      * Preference key for reload facebook likes.
      */
-    public static final String KEY_PREF_RELOAD_FACEBOOK_LIKES = "pref_reload_facebook_likes";
+    public static final String KEY_PREF_RELOAD_FACEBOOK_LIKES = "pref_facebook_reload_likes";
 
     /**
      * Preference key for facebook logout button.
@@ -131,7 +132,9 @@ public class FacebookSettings {
                     Toast.makeText(fragment.getActivity(), "Empty text", Toast.LENGTH_SHORT).show();
                 } else {
                     try {
-                        customPages.add(newValue.toString() + ID_NAME_SEPARATOR + newValue.toString());
+                        String page = newValue.toString() + ID_NAME_SEPARATOR + newValue.toString();
+                        customPages.add(page);
+                        selectedCustomPagesPreference.getValues().add(page);
                         setSelectedPagesPreferenceData();
                     } catch (IllegalArgumentException e) {
                         Toast.makeText(fragment.getActivity(), "This page is on the list", Toast.LENGTH_SHORT).show();
@@ -141,6 +144,7 @@ public class FacebookSettings {
             }
         });
     }
+
     private void clearPagesPreferences() {
         prefs.edit().remove(KEY_PREF_SELECTED_PAGES).apply();
         prefs.edit().remove(KEY_PREF_LIKED_PAGES_IDS_AND_NAMES).apply();

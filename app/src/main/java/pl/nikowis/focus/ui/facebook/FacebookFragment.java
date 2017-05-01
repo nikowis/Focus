@@ -1,5 +1,6 @@
 package pl.nikowis.focus.ui.facebook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -56,11 +57,12 @@ public class FacebookFragment extends Fragment {
     private Profile currentProfile;
     private boolean usingCustomPages;
     private Set<String> selectedPages;
+    private static Context context;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        context = getContext();
         facebookAdapter = new FacebookPostsAdapter(getActivity(), new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -78,7 +80,7 @@ public class FacebookFragment extends Fragment {
 
         resetFacebookFeedLoader();
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
         if (!usingCustomPages) {
             selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
@@ -121,8 +123,8 @@ public class FacebookFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
-                Toast.makeText(getContext(), getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
-                new FacebookLikesLoader(getContext()).loadAllLikes();
+                Toast.makeText(context, getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
+                new FacebookLikesLoader(context).loadAllLikes();
             }
 
             @Override
@@ -142,10 +144,10 @@ public class FacebookFragment extends Fragment {
     }
 
     private void resetFacebookFeedLoader() {
-        facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
+        facebookFeedLoader = new FacebookFeedLoader(context, facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(getContext(), "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show();
 
                 if(currentProfile != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
@@ -169,7 +171,7 @@ public class FacebookFragment extends Fragment {
 
     @OnClick(R.id.facebook_fab_go_to_settings)
     public void goToSettings() {
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        Intent intent = new Intent(context, SettingsActivity.class);
         startActivity(intent);
     }
 

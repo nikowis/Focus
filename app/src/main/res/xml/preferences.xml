@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:key="pref_key_storage_settings"
+        android:key="pref_facebook_category_settings"
         android:title="Facebook">
         <MultiSelectListPreference
-            android:key="pref_select_pages"
+            android:key="pref_facebook_select_pages"
             android:title="Select pages"/>
         <Preference android:title="Reload facebook likes"
-            android:key="pref_reload_facebook_likes" />
+            android:key="pref_facebook_reload_likes" />
         <CheckBoxPreference
-            android:key="pref_using_custom_pages"
+            android:key="pref_facebook_using_custom_pages"
             android:title="Custom pages"
             android:defaultValue="false"/>
         <EditTextPreference
-            android:key="pref_add_pages"
+            android:key="pref_facebook_add_pages"
             android:title="Add custom page"
             android:defaultValue=""
             android:inputType="text"/>
         <MultiSelectListPreference
-            android:key="pref_select_custom_pages"
+            android:key="pref_facebook_select_custom_pages"
             android:title="Select custom pages"/>
         <Preference android:title="Logout from facebook"
             android:key="pref_facebook_logout" />
