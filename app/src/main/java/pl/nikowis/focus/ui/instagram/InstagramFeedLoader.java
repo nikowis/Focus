@@ -168,7 +168,7 @@ public class InstagramFeedLoader {
                     loadedPostsMap.remove(userIdAndName);
                     nextUsersMap.remove(userIdAndName);
                     selectedUserIdsAndNames.remove(userIdAndName);
-                    Toast.makeText(context, userName + " INCORRECT PAGE ID", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, userName + " INCORRECT USER ID", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String next = response.body().pagination.nextUrl;

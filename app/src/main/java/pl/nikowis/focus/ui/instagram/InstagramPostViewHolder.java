@@ -2,6 +2,7 @@ package pl.nikowis.focus.ui.instagram;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -22,6 +23,8 @@ public class InstagramPostViewHolder extends RecyclerView.ViewHolder {
     protected TextView mDateView;
     @BindView(R.id.instagram_item_url)
     protected TextView url;
+    @BindView(R.id.instagram_item_image_view)
+    protected ImageView imageView;
 
     public InstagramPostViewHolder(View itemView) {
         super(itemView);

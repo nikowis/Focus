@@ -44,13 +44,13 @@ public class InstagramRequestManager extends ApiRequestManager {
         call.enqueue(callback);
     }
 
-    public void login(final Callback<InstaLoginResponse> callback) {
+    public void login(Context context, final Callback<InstaLoginResponse> callback) {
         String url = BASE_URL + "/oauth/authorize/"
                 + "?client_id=" + CLIENT_ID
                 + "&redirect_uri=" + REDIRECT_URI
                 + "&response_type=code"
                 + "&scope=basic+public_content+follower_list";
-        InstagramLoginDialog mDialog = new InstagramLoginDialog(this.mContext, url, new InstagramLoginDialog.OAuthDialogListener() {
+        InstagramLoginDialog mDialog = new InstagramLoginDialog(context, url, new InstagramLoginDialog.OAuthDialogListener() {
             @Override
             public void onComplete(String code) {
                 exchangeCodeForToken(code, callback);

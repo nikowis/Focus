@@ -47,4 +47,8 @@ public class InstagramPost {
     public String getLink() {
         return link;
     }
+
+    public InstaFeedDataResponse.InstaSinglePostResponse.Images.Thumbnail getThumbnail() {
+        return thumbnail;
+    }
 }

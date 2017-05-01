@@ -76,7 +76,9 @@ public class InstagramFragment extends Fragment {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         authToken = prefs.getString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
 
-        resetInstragramFeedLoader();
+        if(authToken!=null) {
+            resetInstragramFeedLoader();
+        }
 
 
         usingCustomPages = prefs.getBoolean(InstagramSettings.KEY_PREF_USING_CUSTOM_USERS, false);
@@ -134,7 +136,7 @@ public class InstagramFragment extends Fragment {
     @OnClick(R.id.instagram_login_button)
     public void loginInstagram() {
         InstagramRequestManager requestManager = InstagramRequestManager.getInstance(getContext());
-        requestManager.login(new Callback<InstaLoginResponse>() {
+        requestManager.login(getContext(), new Callback<InstaLoginResponse>() {
             @Override
             public void onResponse(Call<InstaLoginResponse> call, Response<InstaLoginResponse> response) {
                 InstaLoginResponse body = response.body();
@@ -145,6 +147,7 @@ public class InstagramFragment extends Fragment {
                 instagramAdapter.notifyDataSetChanged();
                 new InstagramFollowsLoader(context).loadAllFollows();
                 loginButton.setVisibility(View.GONE);
+                resetInstragramFeedLoader();
             }
 
             @Override

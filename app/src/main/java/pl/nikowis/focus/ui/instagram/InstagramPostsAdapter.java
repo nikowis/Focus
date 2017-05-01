@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostVie
         this.context = context;
         this.itemClickListener = itemClickListener;
         list = new ArrayList<>();
+        ft = new SimpleDateFormat(context.getString(R.string.display_date_format));
     }
 
     @Override
@@ -43,7 +46,12 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostVie
         holder.mTitleView.setText(post.getTitle());
         holder.url.setText(post.getLink());
         holder.mDescriptionView.setText(post.getDescription());
+        holder.mDateView.setText(ft.format(post.getDate()));
         holder.itemView.setOnLongClickListener(itemClickListener);
+
+        Glide.with(context)
+                .load(post.getThumbnail().url)
+                .into(holder.imageView);
     }
 
     @Override

@@ -77,8 +77,6 @@ public class FacebookFragment extends Fragment {
             }
         });
 
-        resetFacebookFeedLoader();
-
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
         if (!usingCustomPages) {
@@ -116,6 +114,7 @@ public class FacebookFragment extends Fragment {
         currentProfile = Profile.getCurrentProfile();
         loadMorePostsButton.setVisibility(View.GONE);
         if (currentProfile != null) {
+            resetFacebookFeedLoader();
             loginButton.setVisibility(View.GONE);
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -123,6 +122,7 @@ public class FacebookFragment extends Fragment {
             public void onSuccess(LoginResult loginResult) {
                 loginButton.setVisibility(View.GONE);
                 Toast.makeText(context, getString(R.string.fb_login_success_toast), Toast.LENGTH_SHORT).show();
+                resetFacebookFeedLoader();
                 new FacebookLikesLoader(context).loadAllLikes();
             }
 
