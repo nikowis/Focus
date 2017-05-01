@@ -65,7 +65,7 @@ public class FacebookFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 try {
-                    TextView idTextView = (TextView) v.findViewById(R.id.item_id);
+                    TextView idTextView = (TextView) v.findViewById(R.id.facebook_item_id);
                     String id = idTextView.getText().toString();
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://post/"+id));
                     startActivity(intent);
@@ -79,26 +79,26 @@ public class FacebookFragment extends Fragment {
         resetFacebookFeedLoader();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
+        usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
         if (!usingCustomPages) {
-            selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+            selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
         } else {
-            selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+            selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
         }
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
+                if (key.equals(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
                     resetFacebookFeedLoader();
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                    selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
-                } else if (key.equals(SettingsFragment.KEY_PREF_SELECTED_PAGES)
-                        || key.equals(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES)) {
-                    selectedPages = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+                    selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+                } else if (key.equals(FacebookSettings.KEY_PREF_SELECTED_PAGES)
+                        || key.equals(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES)) {
+                    selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                } else if (key.equals(SettingsFragment.KEY_PREF_FACEBOOK_LOGOUT)) {
+                } else if (key.equals(FacebookSettings.KEY_PREF_FACEBOOK_LOGOUT)) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetFacebookFeedLoader();
@@ -145,7 +145,7 @@ public class FacebookFragment extends Fragment {
         facebookFeedLoader = new FacebookFeedLoader(getContext(), facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(getActivity(), "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Ready!", Toast.LENGTH_SHORT).show();
 
                 if(currentProfile != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);

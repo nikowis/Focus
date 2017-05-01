@@ -13,13 +13,13 @@ import pl.nikowis.focus.R;
  */
 public class FacebookPostViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.item_title)
+    @BindView(R.id.facebook_item_title)
     protected TextView mTitleView;
-    @BindView(R.id.item_description)
+    @BindView(R.id.facebook_item_description)
     protected TextView mDescriptionView;
-    @BindView(R.id.item_date)
+    @BindView(R.id.facebook_item_date)
     protected TextView mDateView;
-    @BindView(R.id.item_id)
+    @BindView(R.id.facebook_item_id)
     protected TextView id;
 
     public FacebookPostViewHolder(View itemView) {

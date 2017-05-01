@@ -1,7 +1,9 @@
 package pl.nikowis.focus.ui.instagram;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -11,16 +13,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.nikowis.focus.R;
+import pl.nikowis.focus.rest.instagram.InstagramLoginResponse;
 import pl.nikowis.focus.rest.instagram.InstagramRequestManager;
-import pl.nikowis.focus.rest.instagram.withoutRetrofit.InstagramApp;
 import pl.nikowis.focus.ui.base.SettingsActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Nikodem on 4/22/2017.
@@ -38,6 +44,8 @@ public class InstagramFragment extends Fragment {
     private InstagramFeedLoader instagramFeedLoader;
     private InstagramPostAdapter instagramAdapter;
     private Unbinder unbinder;
+    List<InstagramPost> list;
+    private String accessToken;
 
     @Nullable
     @Override
@@ -49,6 +57,8 @@ public class InstagramFragment extends Fragment {
                 return false;
             }
         });
+
+        list = instagramAdapter.getList();
 
         instagramFeedLoader = new InstagramFeedLoader();
 
@@ -74,34 +84,24 @@ public class InstagramFragment extends Fragment {
 
     @OnClick(R.id.instagram_login_button)
     public void loginInstagram() {
-//        InstagramRequestManager requestManager = InstagramRequestManager.getInstance(getContext());
-//        Intent intent = new Intent(
-//                Intent.ACTION_VIEW,
-//
-//                Uri.parse(
-//                        InstagramRequestManager.BASE_URL + "/oauth/authorize/"
-//                                + "?client_id=" + InstagramRequestManager.CLIENT_ID
-//                                + "&redirect_uri=" + InstagramRequestManager.CALLBACK_URL
-//                                + "&response_type=code"
-//                )
-//        );
-//        startActivity(intent);
-
-        final InstagramApp mApp = new InstagramApp(getContext(), InstagramRequestManager.CLIENT_ID,
-                InstagramRequestManager.CLIENT_SECRET, InstagramRequestManager.CALLBACK_URL);
-        mApp.setListener(new InstagramApp.OAuthAuthenticationListener() {
-
+        InstagramRequestManager requestManager = InstagramRequestManager.getInstance(getContext());
+        requestManager.login(new Callback<InstagramLoginResponse>() {
             @Override
-            public void onSuccess() {
-                loginButton.setText("Disconnect");
+            public void onResponse(Call<InstagramLoginResponse> call, Response<InstagramLoginResponse> response) {
+                InstagramLoginResponse body = response.body();
+                accessToken = body.accessToken;
+                list.add(new InstagramPost(accessToken, body.user.fullName));
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                prefs.edit().putString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, accessToken).apply();
+
+                instagramAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onFail(String error) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<InstagramLoginResponse> call, Throwable t) {
+
             }
         });
-        mApp.authorize();
     }
 
     @Override

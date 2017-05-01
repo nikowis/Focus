@@ -16,7 +16,7 @@ import pl.nikowis.focus.R;
  * Created by Nikodem on 4/30/2017.
  */
 
-public class InstagramPostAdapter extends RecyclerView.Adapter {
+public class InstagramPostAdapter extends RecyclerView.Adapter<InstagramPostViewHolder> {
 
     private List<InstagramPost> list;
     private Context context;
@@ -30,15 +30,19 @@ public class InstagramPostAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_facebook_post_item, null);
+    public InstagramPostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_instagram_post_item, null);
         InstagramPostViewHolder postViewHolder = new InstagramPostViewHolder(view);
         return postViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(InstagramPostViewHolder holder, int position) {
         InstagramPost post = list.get(position);
+        holder.itemView.setOnLongClickListener(itemClickListener);
+        holder.mTitleView.setText(post.getTitle());
+        holder.id.setText(post.getId());
+        holder.mDescriptionView.setText(post.getDescription());
         holder.itemView.setOnLongClickListener(itemClickListener);
 
     }

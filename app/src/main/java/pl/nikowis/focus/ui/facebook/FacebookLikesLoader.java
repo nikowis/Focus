@@ -52,7 +52,7 @@ public class FacebookLikesLoader {
 
     /**
      * Method loads all likes and saves them to preferences under key
-     * {@link SettingsFragment#KEY_PREF_LIKED_PAGES_IDS_AND_NAMES}.
+     * {@link FacebookSettings#KEY_PREF_LIKED_PAGES_IDS_AND_NAMES}.
      */
     public void loadAllLikes() {
         Profile currentProfile = Profile.getCurrentProfile();
@@ -75,9 +75,9 @@ public class FacebookLikesLoader {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                     Set<String> pageIdsAndNames = new LinkedHashSet<>();
                     for (FbLikesDataResponse.FbSingleLikeResponse like : facebookLikes) {
-                        pageIdsAndNames.add(like.id + SettingsFragment.ID_NAME_SEPARATOR + like.name);
+                        pageIdsAndNames.add(like.id + FacebookSettings.ID_NAME_SEPARATOR + like.name);
                     }
-                    prefs.edit().putStringSet(SettingsFragment.KEY_PREF_LIKED_PAGES_IDS_AND_NAMES, pageIdsAndNames).apply();
+                    prefs.edit().putStringSet(FacebookSettings.KEY_PREF_LIKED_PAGES_IDS_AND_NAMES, pageIdsAndNames).apply();
                     Toast.makeText(context, "Succesfully loaded facebook likes", Toast.LENGTH_SHORT).show();
                     finishedLoadingListener.finished();
                 }

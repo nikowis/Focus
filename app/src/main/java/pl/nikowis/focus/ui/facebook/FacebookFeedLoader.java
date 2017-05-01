@@ -50,12 +50,12 @@ public class FacebookFeedLoader {
         visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        usingCustomPages = prefs.getBoolean(SettingsFragment.KEY_PREF_USING_CUSTOM_PAGES, false);
+        usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
 
         if (!usingCustomPages) {
-            selectedPageIdsAndNames = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
         } else {
-            selectedPageIdsAndNames = prefs.getStringSet(SettingsFragment.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
         }
 
         nextPagesMap = new LinkedHashMap<>();
@@ -134,7 +134,7 @@ public class FacebookFeedLoader {
         Callback<FbFeedDataResponse> callback = createCallback(pageIdAndName);
         if (nextPagesMap.get(pageIdAndName) != null) {
             if (nextPagesMap.get(pageIdAndName).isEmpty()) {
-                requestManager.getPageFeed(pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
+                requestManager.getPageFeed(pageIdAndName.split(FacebookSettings.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
             } else {
                 contentLoaderEventsListener.loadingMoreData();
                 currentlyLoadingPageCount++;
@@ -187,7 +187,7 @@ public class FacebookFeedLoader {
     }
 
     private String getPageName(String pageIdAndName) {
-        return pageIdAndName.split(SettingsFragment.ID_NAME_SEPARATOR)[1];
+        return pageIdAndName.split(FacebookSettings.ID_NAME_SEPARATOR)[1];
     }
 
     public interface ContentLoaderEventsListener {

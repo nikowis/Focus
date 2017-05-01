@@ -20,8 +20,8 @@ public abstract class ApiRequestManager {
 
     private static final String TAG = ApiRequestManager.class.getName();
 
-    private Context mContext;
-    private String mUrl;
+    protected Context mContext;
+    protected String mUrl;
 
     protected ApiRequestManager(Context context, String baseUrl) {
         this.mContext = context;
@@ -65,32 +65,5 @@ public abstract class ApiRequestManager {
         restAdapter.client(okHttpClient);
         return restAdapter.build();
     }
-
-    protected Retrofit createRestAdapter(String clientId, String clientSecret) {
-        if (!TextUtils.isEmpty(clientId) && !TextUtils.isEmpty(clientSecret)) {
-            String authToken = Credentials.basic(clientId, clientSecret);
-            return createRestAdapter(authToken);
-        }
-
-        return null;
-    }
-
-    protected Retrofit createRestAdapter(final String authToken) {
-        Retrofit.Builder builder = createBaseRetrofitBuilder();
-        OkHttpClient.Builder okHttpClient = createBaseHttpBuilder();
-
-        Retrofit retrofit = null;
-        if (!TextUtils.isEmpty(authToken)) {
-            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
-            if (!okHttpClient.interceptors().contains(interceptor)) {
-                okHttpClient.addInterceptor(interceptor);
-                builder.client(okHttpClient.build());
-                retrofit = builder.build();
-            }
-        }
-
-        return retrofit;
-    }
-
 
 }

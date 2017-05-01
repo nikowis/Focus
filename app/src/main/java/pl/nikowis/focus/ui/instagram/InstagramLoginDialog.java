@@ -1,4 +1,4 @@
-package pl.nikowis.focus.rest.instagram.withoutRetrofit;
+package pl.nikowis.focus.ui.instagram;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,18 +13,19 @@ import android.webkit.WebViewClient;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.nikowis.focus.R;
+import pl.nikowis.focus.rest.instagram.InstagramRequestManager;
 
 /**
  * Created by Nikodem on 4/30/2017.
  */
 
-public class InstagramDialog extends Dialog {
+public class InstagramLoginDialog extends Dialog {
     private String mUrl;
     private OAuthDialogListener mListener;
     @BindView(R.id.instagram_webview)
     WebView mWebView;
 
-    public InstagramDialog(Context context, String url, OAuthDialogListener listener) {
+    public InstagramLoginDialog(Context context, String url, OAuthDialogListener listener) {
         super(context);
         mUrl = url;
         mListener = listener;
@@ -45,10 +46,10 @@ public class InstagramDialog extends Dialog {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.d("Instagram-WebView", "Redirecting URL " + url);
-            if (url.startsWith(InstagramApp.mCallbackUrl)) {
+            if (url.startsWith(InstagramRequestManager.REDIRECT_URI)) {
                 String urls[] = url.split("=");
                 mListener.onComplete(urls[1]);
-                InstagramDialog.this.dismiss();
+                InstagramLoginDialog.this.dismiss();
                 return true;
             }
             return false;
@@ -59,7 +60,7 @@ public class InstagramDialog extends Dialog {
             Log.d("Instagram-WebView", "Page error: " + error.toString());
             super.onReceivedError(view, request, error);
             mListener.onError(error.toString());
-            InstagramDialog.this.dismiss();
+            InstagramLoginDialog.this.dismiss();
         }
     }
 
