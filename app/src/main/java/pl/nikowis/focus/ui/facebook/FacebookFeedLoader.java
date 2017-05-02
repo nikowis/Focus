@@ -185,6 +185,7 @@ public class FacebookFeedLoader {
                 }
                 loadedPostsMap.get(pageIdAndName).addAll(postsFromResponse);
                 if (counter >= currentlyLoadingPageCount) {
+                    loadContent();
                     contentLoaderEventsListener.readyToDisplay();
                     counter = 0;
                     currentlyLoadingPageCount = 0;

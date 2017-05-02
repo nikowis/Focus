@@ -1,5 +1,6 @@
 package pl.nikowis.focus.ui.base;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,8 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterCore;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,13 +34,23 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tabs)
     TabLayout tabLayout;
 
+    private FacebookFragment facebookFragment;
+    private InstagramFragment instagramFragment;
+    private TwitterFragment twitterFragment;
+    private GmailFragment gmailFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TwitterRequestManager.CLIENT_ID, TwitterRequestManager.CLIENT_SECRET);
-        Fabric.with(this, new TwitterCore(authConfig));
+        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        facebookFragment = new FacebookFragment();
+        instagramFragment = new InstagramFragment();
+        twitterFragment = new TwitterFragment();
+        gmailFragment = new GmailFragment();
 
         mTabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mTabsPagerAdapter);
@@ -77,13 +88,13 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (Medias.values()[position]) {
                 case FACEBOOK:
-                    return new FacebookFragment();
+                    return facebookFragment;
                 case INSTAGRAM:
-                    return new InstagramFragment();
+                    return instagramFragment;
                 case TWITTER:
-                    return new TwitterFragment();
+                    return twitterFragment;
                 case GMAIL:
-                    return new GmailFragment();
+                    return gmailFragment;
             }
             return null;
         }
@@ -107,6 +118,15 @@ public class MainActivity extends AppCompatActivity {
                     return "Gmail";
             }
             return null;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (twitterFragment != null) {
+            twitterFragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 

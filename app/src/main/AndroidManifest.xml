@@ -27,14 +27,15 @@
             android:configChanges="orientation|screenSize|keyboard"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="io.fabric.ApiKey"
-                android:value="bfe9e38e41b5fb5bdeaa9436102dbb96e97a39ea" />
+
         </activity>
         <activity
             android:name=".ui.base.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboard"
             android:parentActivityName=".ui.base.MainActivity" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bfe9e38e41b5fb5bdeaa9436102dbb96e97a39ea" />
     </application>
 
 </manifest>

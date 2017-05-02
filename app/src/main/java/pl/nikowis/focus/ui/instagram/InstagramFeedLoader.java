@@ -186,6 +186,7 @@ public class InstagramFeedLoader {
                 }
                 loadedPostsMap.get(userIdAndName).addAll(postsFromResponse);
                 if (counter >= currentlyLoadingUserCount) {
+                    loadContent();
                     contentLoaderEventsListener.readyToDisplay();
                     counter = 0;
                     currentlyLoadingUserCount = 0;

@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import pl.nikowis.focus.R;
@@ -41,18 +43,18 @@ public class TwitterPostsAdapter extends RecyclerView.Adapter<TwitterPostViewHol
 
     @Override
     public void onBindViewHolder(TwitterPostViewHolder holder, int position) {
+
         TwitterPost post = list.get(position);
         holder.itemView.setOnLongClickListener(itemClickListener);
         holder.mTitleView.setText(post.getTitle());
-        holder.url.setText(post.getLink());
+        holder.id.setText(post.getId());
         holder.mDescriptionView.setText(post.getDescription());
-        holder.mDateView.setText(ft.format(post.getDate()));
+        if(post.getDate()!= null) {
+            holder.mDateView.setText(ft.format(post.getDate()));
+        }
         holder.itemView.setOnLongClickListener(itemClickListener);
-
-        Glide.with(context)
-                .load(post.getThumbnail().url)
-                .into(holder.imageView);
     }
+
 
     @Override
     public int getItemCount() {

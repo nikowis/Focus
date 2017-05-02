@@ -45,7 +45,7 @@
                     android:padding="10dp" />
 
                 <TextView
-                    android:id="@+id/twitter_item_url"
+                    android:id="@+id/twitter_item_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.34"

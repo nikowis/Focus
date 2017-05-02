@@ -21,8 +21,8 @@ public class TwitterPostViewHolder extends RecyclerView.ViewHolder {
     protected TextView mDescriptionView;
     @BindView(R.id.twitter_item_date)
     protected TextView mDateView;
-    @BindView(R.id.twitter_item_url)
-    protected TextView url;
+    @BindView(R.id.twitter_item_id)
+    protected TextView id;
     @BindView(R.id.twitter_item_image_view)
     protected ImageView imageView;
 

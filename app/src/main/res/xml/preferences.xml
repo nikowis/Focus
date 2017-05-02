@@ -47,22 +47,6 @@
     <PreferenceCategory
         android:key="pref_twitter_category_settings"
         android:title="Twitter">
-        <MultiSelectListPreference
-            android:key="pref_twitter_select_users"
-            android:title="Select users"/>
-        <Preference android:title="Reload twitter follows"
-            android:key="pref_twitter_reload_follows" />
-        <CheckBoxPreference
-            android:key="pref_twitter_using_custom_users"
-            android:title="Custom users"
-            android:defaultValue="false"/>
-        <EditTextPreference
-            android:key="pref_twitter_add_users"
-            android:title="Add custom user"
-            android:inputType="text"/>
-        <MultiSelectListPreference
-            android:key="pref_twitter_select_custom_users"
-            android:title="Select custom users"/>
         <Preference android:title="Logout from twitter"
             android:key="pref_twitter_logout" />
     </PreferenceCategory>
