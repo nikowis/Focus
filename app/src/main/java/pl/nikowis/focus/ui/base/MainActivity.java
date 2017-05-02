@@ -10,28 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import pl.nikowis.focus.R;
+import pl.nikowis.focus.rest.twitter.TwitterRequestManager;
 import pl.nikowis.focus.ui.facebook.FacebookFragment;
 import pl.nikowis.focus.ui.gmail.GmailFragment;
 import pl.nikowis.focus.ui.instagram.InstagramFragment;
+import pl.nikowis.focus.ui.twitter.TwitterFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private TabsPagerAdapter mTabsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     @BindView(R.id.tab_container)
     ViewPager mViewPager;
 
@@ -41,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TwitterRequestManager.CLIENT_ID, TwitterRequestManager.CLIENT_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig));
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -53,23 +50,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -90,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
                     return new FacebookFragment();
                 case INSTAGRAM:
                     return new InstagramFragment();
+                case TWITTER:
+                    return new TwitterFragment();
                 case GMAIL:
                     return new GmailFragment();
             }
@@ -98,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -109,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
                     return "Facebook";
                 case INSTAGRAM:
                     return "Instagram";
+                case TWITTER:
+                    return "Twitter";
                 case GMAIL:
                     return "Gmail";
             }
@@ -119,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
     public enum Medias {
         FACEBOOK,
         INSTAGRAM,
+        TWITTER,
         GMAIL;
     }
 }
