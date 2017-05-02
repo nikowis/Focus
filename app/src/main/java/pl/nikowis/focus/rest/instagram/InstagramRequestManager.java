@@ -17,7 +17,7 @@ public class InstagramRequestManager extends ApiRequestManager {
     private static InstagramRequestManager instagramRequestManager;
     public static final String CLIENT_ID = "f4ea7842b9254c64804f34acb28a5fe9";
     public static final String CLIENT_SECRET = "11e41b6c8e94435fa6e4cff05b10957f";
-    public static final String REDIRECT_URI = "https://github.com/nikowis/Focus";
+    public static final String REDIRECT_URI = "https://github.com/nikowis/Focus/InstagramCallback";
 
     private InstagramRequestManager(Context context) {
         super(context, BASE_URL);
