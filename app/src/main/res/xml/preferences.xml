@@ -47,6 +47,14 @@
     <PreferenceCategory
         android:key="pref_twitter_category_settings"
         android:title="Twitter">
+        <ListPreference
+            android:key="pref_twitter_page_count"
+            android:persistent="true"
+            android:dialogTitle="Tweets per load"
+            android:defaultValue="10"
+            android:title="Page count"
+            android:entries="@array/page_count"
+            android:entryValues="@array/page_count" />
         <Preference android:title="Logout from twitter"
             android:key="pref_twitter_logout" />
     </PreferenceCategory>

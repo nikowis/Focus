@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -37,6 +40,11 @@ public class TwitterSettings {
      * Preference key for twitter logout button.
      */
     public static final String KEY_PREF_LOGOUT = "pref_twitter_logout";
+
+
+    public static final String KEY_PREF_PAGE_COUNT = "pref_twitter_page_count";
+
+
 
     private Context context;
     private SettingsFragment fragment;

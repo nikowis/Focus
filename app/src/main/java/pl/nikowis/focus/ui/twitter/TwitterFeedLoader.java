@@ -1,6 +1,8 @@
 package pl.nikowis.focus.ui.twitter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
@@ -29,7 +31,7 @@ public class TwitterFeedLoader {
     private TwitterPostsAdapter twitterAdapter;
     private List<TwitterPost> visiblePostsList;
     private List<TwitterPost> loadedPostsList;
-    private static final int PAGE_COUNT = 10;
+    private int pageCount;
     private ContentLoaderEventsListener contentLoaderEventsListener;
     private TwitterRequestManager requestManager;
     private Long lastId = null;
@@ -41,16 +43,18 @@ public class TwitterFeedLoader {
         this.visiblePostsList = twitterAdapter.getList();
         this.contentLoaderEventsListener = listener;
         visiblePostsList.clear();
-        loadedPostsList = new ArrayList<>(PAGE_COUNT * 10);
+        loadedPostsList = new ArrayList<>(pageCount * 10);
         requestManager = new TwitterRequestManager(Twitter.getSessionManager().getActiveSession());
         requestManager.getHomeTilemline(null, createCallback());
         contentLoaderEventsListener.loadingMoreData();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        pageCount = Integer.parseInt(prefs.getString(TwitterSettings.KEY_PREF_PAGE_COUNT, "10"));
     }
 
     public void loadContent() {
 
-        for (int i = 0; i < PAGE_COUNT; i++) {
-            if (loadedPostsList.size() < PAGE_COUNT + 1) {
+        for (int i = 0; i < pageCount; i++) {
+            if (loadedPostsList.size() < pageCount + 1) {
                 contentLoaderEventsListener.loadingMoreData();
                 requestManager.getHomeTilemline(lastId, createCallback());
                 return;
@@ -66,17 +70,19 @@ public class TwitterFeedLoader {
         return new Callback<List<Tweet>>() {
             @Override
             public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-                for (Tweet tweet : response.body()) {
+                if (response.isSuccessful() && response.body() != null) {
+                    for (Tweet tweet : response.body()) {
 
-                    if (lastId != null && lastId == tweet.id) {
-                        //ignore duplicate post
-                    } else {
-                        loadedPostsList.add(new TwitterPost(tweet.user.name, tweet.text, getTwitterDate(tweet.createdAt), tweet.idStr));
-                        lastId = tweet.id;
+                        if (lastId != null && lastId == tweet.id) {
+                            //ignore duplicate post
+                        } else {
+                            loadedPostsList.add(new TwitterPost(tweet.user.name, tweet.text, getTwitterDate(tweet.createdAt), tweet.idStr));
+                            lastId = tweet.id;
+                        }
                     }
+                    loadContent();
+                    contentLoaderEventsListener.readyToDisplay();
                 }
-                loadContent();
-                contentLoaderEventsListener.readyToDisplay();
             }
 
             @Override
@@ -90,7 +96,7 @@ public class TwitterFeedLoader {
 
     public static Date getTwitterDate(String date) {
         Date res = null;
-        final String TWITTER="EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        final String TWITTER = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(TWITTER, Locale.ENGLISH);
         sf.setLenient(true);
         try {

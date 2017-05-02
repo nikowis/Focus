@@ -19,7 +19,6 @@ public class TwitterRequestManager extends TwitterApiClient {
         super(session);
     }
 
-    //public static final String TWITTER_BASE_ID_URL = "https://twitter.com/statuses/";
     public static final String TWITTER_BASE_ID_URL = "twitter://status?id=";
     public static final String CLIENT_ID = "mzkAp2JV5OSiZprom7VhBq3i6";
     public static final String CLIENT_SECRET = "pjN4U9K2gBfppFAVJmnv8uDqQxwz6AEZF9hvmZ6wVZEOKBx89s";
