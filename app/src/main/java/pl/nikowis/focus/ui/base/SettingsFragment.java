@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import pl.nikowis.focus.R;
 import pl.nikowis.focus.ui.facebook.FacebookSettings;
+import pl.nikowis.focus.ui.gmail.GmailSettings;
 import pl.nikowis.focus.ui.instagram.InstagramSettings;
 import pl.nikowis.focus.ui.twitter.TwitterSettings;
 
@@ -18,6 +19,8 @@ public class SettingsFragment extends PreferenceFragment {
     private FacebookSettings facebookSettings;
     private InstagramSettings instagramSettings;
     private TwitterSettings twitterSettings;
+    private GmailSettings gmailSettings;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,6 +29,7 @@ public class SettingsFragment extends PreferenceFragment {
         facebookSettings = new FacebookSettings(this);
         instagramSettings = new InstagramSettings(this);
         twitterSettings = new TwitterSettings(this);
+        gmailSettings = new GmailSettings(this);
     }
 
 }

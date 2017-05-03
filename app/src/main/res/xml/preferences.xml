@@ -50,5 +50,11 @@
         <Preference android:title="Logout from twitter"
             android:key="pref_twitter_logout" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_gmail_category_settings"
+        android:title="Gmail">
+        <Preference android:title="Logout from gmail"
+            android:key="pref_gmail_logout" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

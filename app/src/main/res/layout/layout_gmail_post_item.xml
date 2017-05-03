@@ -24,28 +24,28 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/twitter_item_title"
+                    android:id="@+id/gmail_item_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.46"
                     android:padding="10dp" />
 
                 <TextView
-                    android:id="@+id/twitter_item_date"
+                    android:id="@+id/gmail_item_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.46"
                     android:paddingLeft="10dp"/>
 
                 <TextView
-                    android:id="@+id/twitter_item_description"
+                    android:id="@+id/gmail_item_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.34"
                     android:padding="10dp" />
 
                 <TextView
-                    android:id="@+id/twitter_item_id"
+                    android:id="@+id/gmail_item_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.34"
