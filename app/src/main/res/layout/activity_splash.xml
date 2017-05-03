@@ -19,8 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:elevation="0dp"
-        android:text="Retry connecting"
+        android:text="@string/splash_retry_connecting_button"
         android:visibility="invisible" />
 
 </LinearLayout>

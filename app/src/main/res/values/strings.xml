@@ -92,6 +92,8 @@
     <string name="gmail_login_button">Login to gmail</string>
     <string name="instagram_login_button">Login to insta</string>
     <string name="twitter_login_button">Login to twitter</string>
+    <string name="facebook_login_button">Login to facebook</string>
+    <string name="splash_retry_connecting_button">Retry connecting</string>
     <!-- PREFERENCES -->
 
 </resources>

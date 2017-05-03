@@ -13,8 +13,7 @@
         android:text="@string/gmail_login_button"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="30dp" />
+        android:layout_margin="@dimen/login_button_margin" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/gmail_post_list"
