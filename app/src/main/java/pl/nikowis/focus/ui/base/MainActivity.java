@@ -109,13 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (Medias.values()[position]) {
                 case FACEBOOK:
-                    return "Facebook";
+                    return getString(R.string.facebook_name);
                 case INSTAGRAM:
-                    return "Instagram";
+                    return getString(R.string.instagram_name);
                 case TWITTER:
-                    return "Twitter";
+                    return getString(R.string.twitter_name);
                 case GMAIL:
-                    return "Gmail";
+                    return getString(R.string.gmail_name);
             }
             return null;
         }

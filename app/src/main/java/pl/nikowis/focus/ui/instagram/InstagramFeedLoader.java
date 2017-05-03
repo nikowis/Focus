@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.instagram.InstaFeedDataResponse;
 import pl.nikowis.focus.rest.instagram.InstagramRequestManager;
 import retrofit2.Call;
@@ -48,14 +49,14 @@ public class InstagramFeedLoader {
         this.contentLoaderEventsListener = listener;
         visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        authToken = prefs.getString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
-        usingCustomUsers = prefs.getBoolean(InstagramSettings.KEY_PREF_USING_CUSTOM_USERS, false);
-        pageCount = Integer.parseInt(prefs.getString(InstagramSettings.KEY_PREF_PAGE_COUNT, "10"));
+        authToken = prefs.getString(context.getString(R.string.key_pref_instagram_auth_token), null);
+        usingCustomUsers = prefs.getBoolean(context.getString(R.string.key_pref_instagram_using_custom_users), false);
+        pageCount = Integer.parseInt(prefs.getString(context.getString(R.string.key_pref_facebook_page_count), "10"));
 
         if (!usingCustomUsers) {
-            selectedUserIdsAndNames = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_USERS, new HashSet<String>());
+            selectedUserIdsAndNames = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_users), new HashSet<String>());
         } else {
-            selectedUserIdsAndNames = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_CUSTOM_USERS, new HashSet<String>());
+            selectedUserIdsAndNames = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_custom_users), new HashSet<String>());
         }
 
         nextUsersMap = new LinkedHashMap<>();
@@ -66,7 +67,7 @@ public class InstagramFeedLoader {
             loadedPostsMap.put(user, new ArrayList<InstagramPost>(pageCount * 10));
         }
         if (selectedUserIdsAndNames.isEmpty()) {
-            Toast.makeText(context, "No users selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.instagram_no_users_selected, Toast.LENGTH_SHORT).show();
         } else {
             contentLoaderEventsListener.loadingMoreData();
             currentlyLoadingUserCount = selectedUserIdsAndNames.size();
@@ -84,7 +85,7 @@ public class InstagramFeedLoader {
                 queuedPostsList.clear();
                 instagramAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(context, "Nothing to load", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.nothing_to_load, Toast.LENGTH_SHORT).show();
             }
         } catch (IndexOutOfBoundsException e) {
             //too fast refreshing
@@ -148,7 +149,7 @@ public class InstagramFeedLoader {
         Callback<InstaFeedDataResponse> callback = createCallback(userIdAndName);
         if (nextUsersMap.get(userIdAndName) != null) {
             if (nextUsersMap.get(userIdAndName).isEmpty()) {
-                requestManager.getUserFeed(userIdAndName.split(InstagramSettings.ID_NAME_SEPARATOR)[0], authToken, callback);
+                requestManager.getUserFeed(userIdAndName.split(context.getString(R.string.instagram_id_name_separator))[0], authToken, callback);
             } else {
                 contentLoaderEventsListener.loadingMoreData();
                 currentlyLoadingUserCount++;
@@ -169,7 +170,7 @@ public class InstagramFeedLoader {
                     loadedPostsMap.remove(userIdAndName);
                     nextUsersMap.remove(userIdAndName);
                     selectedUserIdsAndNames.remove(userIdAndName);
-                    Toast.makeText(context, userName + " INCORRECT USER ID", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, userName + context.getString(R.string.instagram_incorrect_user_id), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String next = response.body().pagination.nextUrl;
@@ -196,7 +197,7 @@ public class InstagramFeedLoader {
 
             @Override
             public void onFailure(Call<InstaFeedDataResponse> call, Throwable t) {
-                Toast.makeText(context, "CONNECTION ERROR", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.connection_error, Toast.LENGTH_SHORT).show();
                 Log.w("REST ERROR", t.getMessage());
                 Log.w("REST ERROR", t.getStackTrace().toString());
             }
@@ -204,7 +205,7 @@ public class InstagramFeedLoader {
     }
 
     private String getUserName(String userIdAndName) {
-        return userIdAndName.split(InstagramSettings.ID_NAME_SEPARATOR)[1];
+        return userIdAndName.split(context.getString(R.string.instagram_id_name_separator))[1];
     }
 
     public interface ContentLoaderEventsListener {

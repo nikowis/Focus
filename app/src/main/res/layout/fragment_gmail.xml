@@ -10,7 +10,7 @@
         android:id="@+id/gmail_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login to gmail"
+        android:text="@string/gmail_login_button"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"

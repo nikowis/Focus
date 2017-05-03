@@ -73,7 +73,7 @@ public class TwitterFragment extends Fragment {
             }
         });
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        authToken = prefs.getString(TwitterSettings.KEY_PREF_TWITTER_AUTH_TOKEN, null);
+        authToken = prefs.getString(context.getString(R.string.key_pref_twitter_auth_token), null);
 
         if (authToken != null) {
             resetTwitterFeedLoader();
@@ -82,11 +82,11 @@ public class TwitterFragment extends Fragment {
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(TwitterSettings.KEY_PREF_LOGOUT)) {
+                if (key.equals(context.getString(R.string.key_pref_twitter_logout))) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetTwitterFeedLoader();
-                } else if (key.equals(TwitterSettings.KEY_PREF_PAGE_COUNT)) {
+                } else if (key.equals(context.getString(R.string.key_pref_twitter_page_count))) {
                     resetTwitterFeedLoader();
                 }
             }
@@ -107,8 +107,8 @@ public class TwitterFragment extends Fragment {
                 Log.e("TWITTER LOGIN ######", "token:" + token + "  ;  secret:" + secret);
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                prefs.edit().putString(TwitterSettings.KEY_PREF_TWITTER_AUTH_TOKEN, token).apply();
-                prefs.edit().putString(TwitterSettings.KEY_PREF_TWITTER_AUTH_TOKEN_SECRET, secret).apply();
+                prefs.edit().putString(context.getString(R.string.key_pref_twitter_auth_token), token).apply();
+                prefs.edit().putString(context.getString(R.string.key_pref_twitter_auth_token_secret), secret).apply();
                 twitterAdapter.notifyDataSetChanged();
                 loginButton.setVisibility(View.GONE);
                 resetTwitterFeedLoader();
@@ -116,7 +116,7 @@ public class TwitterFragment extends Fragment {
 
             @Override
             public void failure(TwitterException exception) {
-                Toast.makeText(getContext(), "Twitter login failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.twitter_login_failed, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -146,7 +146,7 @@ public class TwitterFragment extends Fragment {
         twitterFeedLoader = new TwitterFeedLoader(context, twitterAdapter, new TwitterFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                 if (authToken != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }
@@ -154,7 +154,7 @@ public class TwitterFragment extends Fragment {
 
             @Override
             public void loadingMoreData() {
-                Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
                 if (loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.GONE);
                 }

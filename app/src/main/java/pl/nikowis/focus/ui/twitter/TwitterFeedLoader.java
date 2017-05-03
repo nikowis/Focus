@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.twitter.TwitterRequestManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,7 +49,7 @@ public class TwitterFeedLoader {
         requestManager.getHomeTilemline(null, createCallback());
         contentLoaderEventsListener.loadingMoreData();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        pageCount = Integer.parseInt(prefs.getString(TwitterSettings.KEY_PREF_PAGE_COUNT, "10"));
+        pageCount = Integer.parseInt(prefs.getString(context.getString(R.string.key_pref_twitter_page_count), "10"));
     }
 
     public void loadContent() {
@@ -87,17 +88,17 @@ public class TwitterFeedLoader {
 
             @Override
             public void onFailure(Call<List<Tweet>> call, Throwable t) {
-                Toast.makeText(context, "Error loading twitter data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.twitter_error_loading_data, Toast.LENGTH_SHORT).show();
                 contentLoaderEventsListener.readyToDisplay();
             }
         };
     }
 
 
-    public static Date getTwitterDate(String date) {
+    public Date getTwitterDate(String date) {
         Date res = null;
-        final String TWITTER = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-        SimpleDateFormat sf = new SimpleDateFormat(TWITTER, Locale.ENGLISH);
+        final String format = context.getString(R.string.twitter_api_date_format);
+        SimpleDateFormat sf = new SimpleDateFormat(format, Locale.ENGLISH);
         sf.setLenient(true);
         try {
             res = sf.parse(date);

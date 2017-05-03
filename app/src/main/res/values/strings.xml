@@ -1,9 +1,97 @@
 <resources>
     <string name="app_name">Focus</string>
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$s</string>
     <string name="facebook_app_id">159677867894177</string>
     <string name="fb_login_success_toast">Succesfully logged in</string>
     <string name="fb_login_error_toast">Error connecting to facebook</string>
     <string name="display_date_format">HH:mm:ss dd/MM/yyyy</string>
+
+
+
+
+
+    <!-- PREFERENCES -->
+    <string name="key_pref_facebook_add_page">pref_facebook_add_pages</string>
+    <string name="key_pref_facebook_selected_pages">pref_facebook_select_pages</string>
+    <string name="key_pref_facebook_selected_custom_pages">pref_facebook_select_custom_pages</string>
+    <string name="key_pref_facebook_using_custom_pages">pref_facebook_using_custom_pages</string>
+    <string name="key_pref_facebook_reload_likes">pref_facebook_reload_likes</string>
+    <string name="key_pref_facebook_liked_pages_ids_and_names">pref_facebook_liked_pages_ids_and_names</string>
+    <string name="key_pref_facebook_logout">pref_facebook_logout</string>
+    <string name="key_pref_facebook_page_count">pref_facebook_page_count</string>
+    <string name="facebook_id_name_separator">;;;;</string>
+
+    <string name="key_pref_gmail_logout">pref_gmail_logout</string>
+    <string name="key_pref_gmail_page_count">pref_gmail_page_count</string>
+    <string name="key_pref_gmail_logged_in">pref_gmail_logged_in</string>
+    <string name="key_pref_gmail_account_name">pref_gmail_account_name</string>
+
+    <string name="key_pref_instagram_add_user">pref_instagram_add_users</string>
+    <string name="key_pref_instagram_selected_users">pref_instagram_select_users</string>
+    <string name="key_pref_instagram_selected_custom_users">pref_instagram_select_custom_users</string>
+    <string name="key_pref_instagram_using_custom_users">pref_instagram_using_custom_users</string>
+    <string name="key_pref_instagram_reload_follows">pref_instagram_reload_follows</string>
+    <string name="key_pref_instagram_liked_users_ids_and_names">pref_instagram_liked_users_ids_and_names</string>
+    <string name="key_pref_instagram_logout">pref_instagram_logout</string>
+    <string name="key_pref_instagram_page_count">key_pref_instagram_page_count</string>
+    <string name="key_pref_instagram_followed_user_ids_and_names">pref_instagram_followed_users_ids_and_names</string>
+    <string name="instagram_id_name_separator">;;;;</string>
+    <string name="key_pref_instagram_auth_token">pref_instagram_auth_token</string>
+
+    <string name="key_pref_twitter_logout">pref_twitter_logout</string>
+    <string name="key_pref_twitter_page_count">pref_twitter_page_count</string>
+    <string name="key_pref_twitter_auth_token">pref_twitter_auth_token</string>
+    <string name="key_pref_twitter_auth_token_secret">pref_twitter_auth_token_secret</string>
+    <string name="pref_facebook_title_select_pages">Select pages</string>
+    <string name="pref_facebook_title_using_custom_pages">Custom pages</string>
+    <string name="pref_facebook_title_add_custom_page">Add custom page</string>
+    <string name="pref_facebook_title_select_custom_pages">Select custom pages</string>
+    <string name="pref_facebook_title_page_count">Page count</string>
+    <string name="pref_facebook_title_logout">Logout from facebook</string>
+    <string name="pref_facebook_title">Facebook</string>
+    <string name="pref_instagram_title">Instagram</string>
+    <string name="pref_instagram_title_select_users">Select users</string>
+    <string name="pref_instagram_title_using_custom_users">Custom users</string>
+    <string name="pref_instagram_title_add_custom_user">Add custom user id</string>
+    <string name="pref_instagram_title_select_custom_users">Select custom users</string>
+    <string name="pref_instagram_title_page_count">Page count</string>
+    <string name="pref_instagram_title_logout">Logout from instagram</string>
+    <string name="pref_instagram_title_reload_follows">Reload instagram follows</string>
+    <string name="pref_facebook_title_reload_likes">Reload facebook likes</string>
+    <string name="pref_twitter_title">Twitter</string>
+    <string name="pref_twitter_title_page_count">Page count</string>
+    <string name="pref_twitter_title_logout">Logout from twitter</string>
+    <string name="pref_gmail_title">Gmail</string>
+    <string name="pref_gmail_title_page_count">Page count</string>
+    <string name="pref_gmail_title_logout">Logout from gmail</string>
+    <string name="gson_builder_default_date_format">yyyy-MM-dd\'T\'HH:mm:ssZ</string>
+    <string name="facebook_name">Facebook</string>
+    <string name="instagram_name">Insta</string>
+    <string name="twitter_name">Twitter</string>
+    <string name="gmail_name">Gmail</string>
+    <string name="no_pages_selected">No pages selected</string>
+    <string name="nothing_to_load">Nothing to load</string>
+    <string name="connection_error">CONNECTION ERROR</string>
+    <string name="facebook_incorrect_page_id">INCORRECT PAGE ID</string>
+    <string name="loader_ready">Ready!</string>
+    <string name="loader_loading">Loading...</string>
+    <string name="facebook_load_likes_success">Succesfully loaded facebook likes</string>
+    <string name="loader_error_loading">ERROR LOADING</string>
+    <string name="facebook_select_page_already_on_list">This page is on the list</string>
+    <string name="install_google_play_services">Install Google Play Services</string>
+    <string name="gmail_access_rationale">This app needs to access your gmail.</string>
+    <string name="no_network_available">No network available</string>
+    <string name="instagram_add_empty_user">Empty text</string>
+    <string name="instagram_add_user_on_the_list">This user is on the list</string>
+    <string name="instagram_no_users_selected">No users selected</string>
+    <string name="instagram_incorrect_user_id">INCORRECT USER ID</string>
+    <string name="instragam_load_follows_success">Succesfully loaded instagram follows</string>
+    <string name="twitter_login_failed">Twitter login failed</string>
+    <string name="twitter_api_date_format">EEE MMM dd HH:mm:ss ZZZZZ yyyy</string>
+    <string name="twitter_error_loading_data">Error loading twitter data</string>
+    <string name="gmail_login_button">Login to gmail</string>
+    <string name="instagram_login_button">Login to insta</string>
+    <string name="twitter_login_button">Login to twitter</string>
+    <!-- PREFERENCES -->
+
 </resources>

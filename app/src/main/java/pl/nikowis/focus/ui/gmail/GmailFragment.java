@@ -89,20 +89,18 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         gmailAdapter = new GmailPostsAdapter(getContext(), new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                try {
-                    Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("com.google.android.gm");
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Log.e("ERROR gmail intent :", e.getMessage());
-                }
+
+                Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("com.google.android.gm");
+                startActivity(intent);
+
                 return true;
             }
         });
         gmailMessages = gmailAdapter.getList();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        userLoggedIn = prefs.getBoolean(GmailSettings.KEY_PREF_GMAIL_LOGGED_IN, false);
-        String accountName = prefs.getString(GmailSettings.KEY_PREF_GMAIL_ACCOUNT_NAME, null);
+        userLoggedIn = prefs.getBoolean(context.getString(R.string.key_pref_gmail_logged_in), false);
+        String accountName = prefs.getString(context.getString(R.string.key_pref_gmail_account_name), null);
         mCredential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
@@ -114,11 +112,11 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(GmailSettings.KEY_PREF_LOGOUT)) {
+                if (key.equals(context.getString(R.string.key_pref_gmail_logout))) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetGmailFeedLoader();
-                } else if (key.equals(GmailSettings.KEY_PREF_PAGE_COUNT)) {
+                } else if (key.equals(context.getString(R.string.key_pref_gmail_page_count))) {
                     resetGmailFeedLoader();
                 }
             }
@@ -143,7 +141,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (!isDeviceOnline()) {
-            Toast.makeText(context, "No network available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.no_network_available, Toast.LENGTH_SHORT).show();
         } else {
             authorizationSuccessfutl();
         }
@@ -158,8 +156,8 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         userLoggedIn = true;
         loginButton.setVisibility(View.GONE);
         resetGmailFeedLoader();
-        prefs.edit().putBoolean(GmailSettings.KEY_PREF_GMAIL_LOGGED_IN, true).apply();
-        prefs.edit().putString(GmailSettings.KEY_PREF_GMAIL_ACCOUNT_NAME, mCredential.getSelectedAccountName()).apply();
+        prefs.edit().putBoolean(context.getString(R.string.key_pref_gmail_logged_in), true).apply();
+        prefs.edit().putString(context.getString(R.string.key_pref_gmail_account_name), mCredential.getSelectedAccountName()).apply();
     }
 
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
@@ -180,7 +178,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    "This app needs to access your gmail.",
+                    getString(R.string.gmail_access_rationale),
                     REQUEST_PERMISSION_GET_ACCOUNTS,
                     Manifest.permission.GET_ACCOUNTS
             );
@@ -204,7 +202,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         switch (requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    Toast.makeText(context, "Install Google Play Services", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.install_google_play_services, Toast.LENGTH_SHORT).show();
                 } else {
                     getResultsFromApi();
                 }
@@ -289,7 +287,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         gmailFeedLoader = new GmailFeedLoader(context, mCredential, gmailAdapter, new GmailFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                 if (userLoggedIn && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }
@@ -297,7 +295,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
 
             @Override
             public void loadingMoreData() {
-                Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
                 if (loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.GONE);
                 }

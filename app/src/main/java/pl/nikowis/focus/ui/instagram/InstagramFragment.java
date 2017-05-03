@@ -74,37 +74,37 @@ public class InstagramFragment extends Fragment {
             }
         });
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        authToken = prefs.getString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
+        authToken = prefs.getString(context.getString(R.string.key_pref_instagram_auth_token), null);
 
         if(authToken!=null) {
             resetInstragramFeedLoader();
         }
 
 
-        usingCustomPages = prefs.getBoolean(InstagramSettings.KEY_PREF_USING_CUSTOM_USERS, false);
+        usingCustomPages = prefs.getBoolean(context.getString(R.string.key_pref_instagram_using_custom_users), false);
         if (!usingCustomPages) {
-            selectedPages = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_USERS, new HashSet<String>());
+            selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_users), new HashSet<String>());
         } else {
-            selectedPages = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_CUSTOM_USERS, new HashSet<String>());
+            selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_custom_users), new HashSet<String>());
         }
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(InstagramSettings.KEY_PREF_SELECTED_CUSTOM_USERS)) {
+                if (key.equals(context.getString(R.string.key_pref_instagram_selected_custom_users))) {
                     resetInstragramFeedLoader();
                     instagramAdapter.getList().clear();
                     instagramAdapter.notifyDataSetChanged();
-                    selectedPages = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_CUSTOM_USERS, new HashSet<String>());
-                } else if (key.equals(InstagramSettings.KEY_PREF_SELECTED_USERS)
-                        || key.equals(InstagramSettings.KEY_PREF_USING_CUSTOM_USERS)) {
-                    selectedPages = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_USERS, new HashSet<String>());
+                    selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_custom_users), new HashSet<String>());
+                } else if (key.equals(context.getString(R.string.key_pref_instagram_selected_users))
+                        || key.equals(context.getString(R.string.key_pref_instagram_using_custom_users))) {
+                    selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_users), new HashSet<String>());
                     instagramAdapter.getList().clear();
                     instagramAdapter.notifyDataSetChanged();
-                } else if (key.equals(InstagramSettings.KEY_PREF_LOGOUT)) {
+                } else if (key.equals(context.getString(R.string.key_pref_instagram_logout))) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetInstragramFeedLoader();
-                }else if (key.equals(InstagramSettings.KEY_PREF_PAGE_COUNT)) {
+                }else if (key.equals(context.getString(R.string.key_pref_instagram_page_count))) {
                     resetInstragramFeedLoader();
                 }
             }
@@ -144,8 +144,7 @@ public class InstagramFragment extends Fragment {
                 InstaLoginResponse body = response.body();
                 authToken = body.accessToken;
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                prefs.edit().putString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, authToken).apply();
-                prefs.edit().putString(InstagramSettings.KEY_PREF_INSTAGRAM_USER_ID, body.user.id).apply();
+                prefs.edit().putString(context.getString(R.string.key_pref_instagram_auth_token), authToken).apply();
                 instagramAdapter.notifyDataSetChanged();
                 new InstagramFollowsLoader(context).loadAllFollows();
                 loginButton.setVisibility(View.GONE);
@@ -163,7 +162,7 @@ public class InstagramFragment extends Fragment {
         instagramFeedLoader = new InstagramFeedLoader(context, instagramAdapter, new InstagramFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                 if (authToken != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }
@@ -171,7 +170,7 @@ public class InstagramFragment extends Fragment {
 
             @Override
             public void loadingMoreData() {
-                Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
                 if (loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.GONE);
                 }

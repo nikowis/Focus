@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import pl.nikowis.focus.R;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -30,7 +31,7 @@ public abstract class ApiRequestManager {
     private Retrofit.Builder createBaseRetrofitBuilder() {
         Retrofit.Builder restAdapter = new Retrofit.Builder();
         restAdapter.baseUrl(mUrl);
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+        Gson gson = new GsonBuilder().setDateFormat(mContext.getString(R.string.gson_builder_default_date_format)).create();
         restAdapter.addConverterFactory(GsonConverterFactory.create(gson));
         return restAdapter;
     }

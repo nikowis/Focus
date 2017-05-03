@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import pl.nikowis.focus.R;
 import pl.nikowis.focus.ui.base.MainActivity;
 import pl.nikowis.focus.ui.base.SettingsFragment;
 
@@ -22,53 +23,6 @@ import pl.nikowis.focus.ui.base.SettingsFragment;
  */
 
 public class InstagramSettings {
-
-    /**
-     * Preference key for storing user authorization token.
-     */
-    public static final String KEY_PREF_INSTAGRAM_AUTH_TOKEN = "pref_instagram_auth_token";
-    /**
-     * Preference key for storing user id.
-     */
-    public static final String KEY_PREF_INSTAGRAM_USER_ID = "pref_instagram_user_id";
-
-    /**
-     * Preference key for adding new custom users.
-     */
-    public static final String KEY_PREF_ADD_USER = "pref_instagram_add_users";
-    /**
-     * Preference key for selected regular users.
-     */
-    public static final String KEY_PREF_SELECTED_USERS = "pref_instagram_select_users";
-    /**
-     * Preference key for selected custom users.
-     */
-    public static final String KEY_PREF_SELECTED_CUSTOM_USERS = "pref_instagram_select_custom_users";
-    /**
-     * Preference key for boolean describing if custom users are being used.
-     */
-    public static final String KEY_PREF_USING_CUSTOM_USERS = "pref_instagram_using_custom_users";
-    /**
-     * Preference key for liked users ids concatenated with their names.
-     */
-    public static final String KEY_PREF_FOLLOWED_USERS_IDS_AND_NAMES = "pref_instagram_followed_users_ids_and_names";
-
-    /**
-     * Id - name separator.
-     */
-    public static final String ID_NAME_SEPARATOR = ";;;;";
-
-    /**
-     * Preference key for reload instagram follows.
-     */
-    public static final String KEY_PREF_RELOAD_FOLLOWS = "pref_instagram_reload_follows";
-
-    /**
-     * Preference key for instagram logout button.
-     */
-    public static final String KEY_PREF_LOGOUT = "pref_instagram_logout";
-
-    public static final String KEY_PREF_PAGE_COUNT = "pref_instagram_page_count";
 
     private Set<String> usersIdsAndNames;
     private Set<String> customUsers;
@@ -90,11 +44,11 @@ public class InstagramSettings {
         this.context = fragment.getContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addUserPreference = fragment.findPreference(KEY_PREF_ADD_USER);
-        selectedUsersPreference = (MultiSelectListPreference) fragment.findPreference(KEY_PREF_SELECTED_USERS);
-        selectedCustomUsersPreference = (MultiSelectListPreference) fragment.findPreference(KEY_PREF_SELECTED_CUSTOM_USERS);
-        usingCustomPreference = (CheckBoxPreference) fragment.findPreference(KEY_PREF_USING_CUSTOM_USERS);
-        reloadInstagramFollows = fragment.findPreference(KEY_PREF_RELOAD_FOLLOWS);
+        addUserPreference = fragment.findPreference(context.getString(R.string.key_pref_instagram_add_user));
+        selectedUsersPreference = (MultiSelectListPreference) fragment.findPreference(context.getString(R.string.key_pref_instagram_selected_users));
+        selectedCustomUsersPreference = (MultiSelectListPreference) fragment.findPreference(context.getString(R.string.key_pref_instagram_selected_custom_users));
+        usingCustomPreference = (CheckBoxPreference) fragment.findPreference(context.getString(R.string.key_pref_instagram_using_custom_users));
+        reloadInstagramFollows = fragment.findPreference(context.getString(R.string.key_pref_instagram_reload_follows));
         reloadInstagramFollows.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -104,26 +58,25 @@ public class InstagramSettings {
                 return true;
             }
         });
-        instagramLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
-        authorizationToken = prefs.getString(KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
+        instagramLogout = settingsFragment.findPreference(context.getString(R.string.key_pref_instagram_logout));
+        authorizationToken = prefs.getString(context.getString(R.string.key_pref_instagram_auth_token), null);
         userLoggedIn = authorizationToken != null;
 
-        Preference pageCount = settingsFragment.findPreference(KEY_PREF_PAGE_COUNT);
+        Preference pageCount = settingsFragment.findPreference(context.getString(R.string.key_pref_instagram_page_count));
         pageCount.setEnabled(userLoggedIn);
 
         instagramLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 clearUsersPreferences();
-                prefs.edit().remove(KEY_PREF_SELECTED_CUSTOM_USERS).apply();
-                prefs.edit().remove(KEY_PREF_INSTAGRAM_AUTH_TOKEN).apply();
-                prefs.edit().remove(KEY_PREF_INSTAGRAM_USER_ID).apply();
+                prefs.edit().remove(context.getString(R.string.key_pref_instagram_selected_custom_users)).apply();
+                prefs.edit().remove(context.getString(R.string.key_pref_instagram_auth_token)).apply();
                 navigateToMainActivity();
                 return true;
             }
         });
 
-        customUsers = prefs.getStringSet(KEY_PREF_SELECTED_CUSTOM_USERS, new HashSet<String>());
+        customUsers = prefs.getStringSet(context.getString(R.string.key_pref_instagram_selected_custom_users), new HashSet<String>());
 
         usingCustom = usingCustomPreference.isChecked();
         setupEnabledPreferences();
@@ -143,15 +96,15 @@ public class InstagramSettings {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if (((String) newValue).isEmpty()) {
-                    Toast.makeText(fragment.getActivity(), "Empty text", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(fragment.getActivity(), R.string.instagram_add_empty_user, Toast.LENGTH_SHORT).show();
                 } else {
                     try {
-                        String user = newValue.toString() + ID_NAME_SEPARATOR + newValue.toString();
+                        String user = newValue.toString() + context.getString(R.string.instagram_id_name_separator) + newValue.toString();
                         customUsers.add(user);
                         selectedCustomUsersPreference.getValues().add(user);
                         setSelectedUsersPreferenceData();
                     } catch (IllegalArgumentException e) {
-                        Toast.makeText(fragment.getActivity(), "This user is on the list", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(fragment.getActivity(), R.string.instagram_add_user_on_the_list, Toast.LENGTH_SHORT).show();
                     }
                 }
                 return true;
@@ -160,8 +113,8 @@ public class InstagramSettings {
     }
 
     private void clearUsersPreferences() {
-        prefs.edit().remove(KEY_PREF_SELECTED_USERS).apply();
-        prefs.edit().remove(KEY_PREF_FOLLOWED_USERS_IDS_AND_NAMES).apply();
+        prefs.edit().remove(context.getString(R.string.key_pref_instagram_selected_users)).apply();
+        prefs.edit().remove(context.getString(R.string.key_pref_instagram_followed_user_ids_and_names)).apply();
     }
 
     private InstagramFollowsLoader.FinishedLoadingListener createFollowsLoadedCallback() {
@@ -190,7 +143,7 @@ public class InstagramSettings {
             selectedCustomUsersPreference.setEntries(entries);
             selectedCustomUsersPreference.setEntryValues(entriesValues);
         } else {
-            usersIdsAndNames = prefs.getStringSet(KEY_PREF_FOLLOWED_USERS_IDS_AND_NAMES, new HashSet<String>());
+            usersIdsAndNames = prefs.getStringSet(context.getString(R.string.key_pref_instagram_followed_user_ids_and_names), new HashSet<String>());
             List<String> usersNames = getUserNamesList(usersIdsAndNames);
             CharSequence[] entries = usersNames.toArray(new CharSequence[0]);
             CharSequence[] entriesValues = usersIdsAndNames.toArray(new CharSequence[0]);
@@ -208,7 +161,7 @@ public class InstagramSettings {
     public List<String> getUserNamesList(Set<String> idsAndNames) {
         ArrayList<String> names = new ArrayList<>(idsAndNames.size());
         for (String userIdAndName : idsAndNames) {
-            String[] split = userIdAndName.split(ID_NAME_SEPARATOR);
+            String[] split = userIdAndName.split(context.getString(R.string.instagram_id_name_separator));
             names.add(split[1]);
         }
         return names;

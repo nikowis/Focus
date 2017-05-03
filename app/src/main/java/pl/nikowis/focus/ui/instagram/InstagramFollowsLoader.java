@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.instagram.InstaFollowsDataResponse;
 import pl.nikowis.focus.rest.instagram.InstagramRequestManager;
 import retrofit2.Call;
@@ -46,12 +47,11 @@ public class InstagramFollowsLoader {
     }
 
     /**
-     * Method loads all likes and saves them to preferences under key
-     * {@link InstagramSettings#KEY_PREF_FOLLOWED_USERS_IDS_AND_NAMES}.
+     * Method loads all likes and saves them to preferences.
      */
     public void loadAllFollows() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String auth_token = prefs.getString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
+        String auth_token = prefs.getString(context.getString(R.string.key_pref_instagram_auth_token), null);
         if (auth_token != null) {
             requestManager.getFollowedUsers(auth_token, createNextPageCallback());
         } else {
@@ -70,10 +70,10 @@ public class InstagramFollowsLoader {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                     Set<String> pageIdsAndNames = new LinkedHashSet<>();
                     for (InstaFollowsDataResponse.InstaSingleFollowResponse follow : instaFollows) {
-                        pageIdsAndNames.add(follow.id + InstagramSettings.ID_NAME_SEPARATOR + follow.username);
+                        pageIdsAndNames.add(follow.id + context.getString(R.string.instagram_id_name_separator) + follow.username);
                     }
-                    prefs.edit().putStringSet(InstagramSettings.KEY_PREF_FOLLOWED_USERS_IDS_AND_NAMES, pageIdsAndNames).apply();
-                    Toast.makeText(context, "Succesfully loaded instagram follows", Toast.LENGTH_SHORT).show();
+                    prefs.edit().putStringSet(context.getString(R.string.key_pref_instagram_followed_user_ids_and_names), pageIdsAndNames).apply();
+                    Toast.makeText(context, R.string.instragam_load_follows_success, Toast.LENGTH_SHORT).show();
                     finishedLoadingListener.finished();
                 }
             }

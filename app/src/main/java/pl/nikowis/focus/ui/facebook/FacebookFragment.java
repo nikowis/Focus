@@ -78,30 +78,30 @@ public class FacebookFragment extends Fragment {
         });
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
+        usingCustomPages = prefs.getBoolean(context.getString(R.string.key_pref_facebook_using_custom_pages), false);
         if (!usingCustomPages) {
-            selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+            selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_pages), new HashSet<String>());
         } else {
-            selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+            selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_custom_pages), new HashSet<String>());
         }
         prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES)) {
+                if (key.equals(context.getString(R.string.key_pref_facebook_selected_custom_pages))) {
                     resetFacebookFeedLoader();
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                    selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
-                } else if (key.equals(FacebookSettings.KEY_PREF_SELECTED_PAGES)
-                        || key.equals(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES)) {
-                    selectedPages = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+                    selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_custom_pages), new HashSet<String>());
+                } else if (key.equals(context.getString(R.string.key_pref_facebook_selected_pages))
+                        || key.equals(context.getString(R.string.key_pref_facebook_using_custom_pages))) {
+                    selectedPages = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_pages), new HashSet<String>());
                     facebookAdapter.getList().clear();
                     facebookAdapter.notifyDataSetChanged();
-                } else if (key.equals(FacebookSettings.KEY_PREF_LOGOUT)) {
+                } else if (key.equals(context.getString(R.string.key_pref_facebook_logout))) {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetFacebookFeedLoader();
-                } else if (key.equals(FacebookSettings.KEY_PREF_PAGE_COUNT)) {
+                } else if (key.equals(context.getString(R.string.key_pref_facebook_page_count))) {
                     resetFacebookFeedLoader();
                 }
             }
@@ -148,7 +148,7 @@ public class FacebookFragment extends Fragment {
         facebookFeedLoader = new FacebookFeedLoader(context, facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
 
                 if(currentProfile != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
@@ -157,7 +157,7 @@ public class FacebookFragment extends Fragment {
 
             @Override
             public void loadingMoreData() {
-                Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
                 if(loadMorePostsButton!=null){
                     loadMorePostsButton.setVisibility(View.GONE);
                 }

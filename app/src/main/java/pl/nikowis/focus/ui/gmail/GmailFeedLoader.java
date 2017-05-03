@@ -20,6 +20,8 @@ import com.google.api.services.gmail.model.MessagePartHeader;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.nikowis.focus.R;
+
 /**
  * Created by Nikodem on 5/3/2017.
  */
@@ -43,7 +45,7 @@ public class GmailFeedLoader {
         this.mCredential = mCredential;
         visibleMailList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        pageCount = Integer.parseInt(prefs.getString(GmailSettings.KEY_PREF_PAGE_COUNT, "10"));
+        pageCount = Integer.parseInt(prefs.getString(context.getString(R.string.key_pref_gmail_page_count), "10"));
         loadedMailIds = new ArrayList<>(pageCount * 10);
         loadedMailList = new ArrayList<>(pageCount * 10);
         contentLoaderEventsListener.loadingMoreData();

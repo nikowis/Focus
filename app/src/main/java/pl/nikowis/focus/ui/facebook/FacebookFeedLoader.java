@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pl.nikowis.focus.R;
 import pl.nikowis.focus.rest.facebook.FacebookRequestManager;
 import pl.nikowis.focus.rest.facebook.FbFeedDataResponse;
 import retrofit2.Call;
@@ -48,13 +49,13 @@ public class FacebookFeedLoader {
         this.contentLoaderEventsListener = listener;
         visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        pageCount = Integer.parseInt(prefs.getString(FacebookSettings.KEY_PREF_PAGE_COUNT, "10"));
-        usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
+        pageCount = Integer.parseInt(prefs.getString(context.getString(R.string.key_pref_facebook_page_count), "10"));
+        usingCustomPages = prefs.getBoolean(context.getString(R.string.key_pref_facebook_using_custom_pages), false);
 
         if (!usingCustomPages) {
-            selectedPageIdsAndNames = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_PAGES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_pages), new HashSet<String>());
         } else {
-            selectedPageIdsAndNames = prefs.getStringSet(FacebookSettings.KEY_PREF_SELECTED_CUSTOM_PAGES, new HashSet<String>());
+            selectedPageIdsAndNames = prefs.getStringSet(context.getString(R.string.key_pref_facebook_selected_custom_pages), new HashSet<String>());
         }
 
         nextPagesMap = new LinkedHashMap<>();
@@ -65,7 +66,7 @@ public class FacebookFeedLoader {
             loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
         if (selectedPageIdsAndNames.isEmpty()) {
-            Toast.makeText(context, "No pages selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.no_pages_selected, Toast.LENGTH_SHORT).show();
         } else {
             contentLoaderEventsListener.loadingMoreData();
             currentlyLoadingPageCount = selectedPageIdsAndNames.size();
@@ -83,7 +84,7 @@ public class FacebookFeedLoader {
                 queuedPostsList.clear();
                 facebookAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(context, "Nothing to load", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.nothing_to_load, Toast.LENGTH_SHORT).show();
             }
         } catch (IndexOutOfBoundsException e) {
             //too fast refreshing
@@ -148,7 +149,7 @@ public class FacebookFeedLoader {
         Callback<FbFeedDataResponse> callback = createCallback(pageIdAndName);
         if (nextPagesMap.get(pageIdAndName) != null) {
             if (nextPagesMap.get(pageIdAndName).isEmpty()) {
-                requestManager.getPageFeed(pageIdAndName.split(FacebookSettings.ID_NAME_SEPARATOR)[0], AccessToken.getCurrentAccessToken().getToken(), callback);
+                requestManager.getPageFeed(pageIdAndName.split(context.getString(R.string.facebook_id_name_separator))[0], AccessToken.getCurrentAccessToken().getToken(), callback);
             } else {
                 contentLoaderEventsListener.loadingMoreData();
                 currentlyLoadingPageCount++;
@@ -169,7 +170,7 @@ public class FacebookFeedLoader {
                     loadedPostsMap.remove(pageIdAndName);
                     nextPagesMap.remove(pageIdAndName);
                     selectedPageIdsAndNames.remove(pageIdAndName);
-                    Toast.makeText(context, pageName + " INCORRECT PAGE ID", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, pageName + context.getString(R.string.facebook_incorrect_page_id), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String next = response.body().paging.next;
@@ -194,7 +195,7 @@ public class FacebookFeedLoader {
 
             @Override
             public void onFailure(Call<FbFeedDataResponse> call, Throwable t) {
-                Toast.makeText(context, "CONNECTION ERROR", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.connection_error, Toast.LENGTH_SHORT).show();
                 Log.w("REST ERROR", t.getMessage());
                 Log.w("REST ERROR", t.getStackTrace().toString());
             }
@@ -202,7 +203,7 @@ public class FacebookFeedLoader {
     }
 
     private String getPageName(String pageIdAndName) {
-        return pageIdAndName.split(FacebookSettings.ID_NAME_SEPARATOR)[1];
+        return pageIdAndName.split(context.getString(R.string.facebook_id_name_separator))[1];
     }
 
     public interface ContentLoaderEventsListener {
