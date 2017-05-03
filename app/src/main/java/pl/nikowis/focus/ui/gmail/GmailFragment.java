@@ -51,7 +51,7 @@ import static android.app.Activity.RESULT_OK;
 public class GmailFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.gmail_login_button)
-    Button mCallApiButton;
+    Button loginButton;
     @BindView(R.id.gmail_post_list)
     RecyclerView recyclerView;
     @BindView(R.id.gmail_fab_load_more)
@@ -107,10 +107,23 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
                 .setBackOff(new ExponentialBackOff());
 
         if (userLoggedIn && accountName != null) {
-            mCallApiButton.setVisibility(View.GONE);
+            loginButton.setVisibility(View.GONE);
             mCredential.setSelectedAccountName(accountName);
             resetGmailFeedLoader();
         }
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals(GmailSettings.KEY_PREF_LOGOUT)) {
+                    loginButton.setVisibility(View.VISIBLE);
+                    loadMorePostsButton.setVisibility(View.GONE);
+                    resetGmailFeedLoader();
+                } else if (key.equals(GmailSettings.KEY_PREF_PAGE_COUNT)) {
+                    resetGmailFeedLoader();
+                }
+            }
+        });
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(gmailAdapter);
@@ -143,7 +156,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
 
     private void authorizationSuccessfutl() {
         userLoggedIn = true;
-        mCallApiButton.setVisibility(View.GONE);
+        loginButton.setVisibility(View.GONE);
         resetGmailFeedLoader();
         prefs.edit().putBoolean(GmailSettings.KEY_PREF_GMAIL_LOGGED_IN, true).apply();
         prefs.edit().putString(GmailSettings.KEY_PREF_GMAIL_ACCOUNT_NAME, mCredential.getSelectedAccountName()).apply();

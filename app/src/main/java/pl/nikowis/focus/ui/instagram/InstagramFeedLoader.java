@@ -35,7 +35,7 @@ public class InstagramFeedLoader {
     private Map<String, String> nextUsersMap;
     private Map<String, List<InstagramPost>> loadedPostsMap;
     private List<InstagramPost> queuedPostsList;
-    private static final int PAGE_COUNT = 10;
+    private int pageCount;
     private boolean usingCustomUsers;
     private ContentLoaderEventsListener contentLoaderEventsListener;
     private int counter, currentlyLoadingUserCount;
@@ -50,6 +50,7 @@ public class InstagramFeedLoader {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         authToken = prefs.getString(InstagramSettings.KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
         usingCustomUsers = prefs.getBoolean(InstagramSettings.KEY_PREF_USING_CUSTOM_USERS, false);
+        pageCount = Integer.parseInt(prefs.getString(InstagramSettings.KEY_PREF_PAGE_COUNT, "10"));
 
         if (!usingCustomUsers) {
             selectedUserIdsAndNames = prefs.getStringSet(InstagramSettings.KEY_PREF_SELECTED_USERS, new HashSet<String>());
@@ -59,10 +60,10 @@ public class InstagramFeedLoader {
 
         nextUsersMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
-        queuedPostsList = new ArrayList<>(PAGE_COUNT * 10);
+        queuedPostsList = new ArrayList<>(pageCount * 10);
         for (String user : selectedUserIdsAndNames) {
             nextUsersMap.put(user, "");
-            loadedPostsMap.put(user, new ArrayList<InstagramPost>(PAGE_COUNT * 10));
+            loadedPostsMap.put(user, new ArrayList<InstagramPost>(pageCount * 10));
         }
         if (selectedUserIdsAndNames.isEmpty()) {
             Toast.makeText(context, "No users selected", Toast.LENGTH_SHORT).show();
@@ -95,7 +96,7 @@ public class InstagramFeedLoader {
     private void calculateQueuedPostsList() {
         Map<String, InstagramPost> latestPostsFromEachUser = constructLatestsPostsMap();
 
-        for (int i = 0; i < PAGE_COUNT; i++) {
+        for (int i = 0; i < pageCount; i++) {
             Map.Entry<String, InstagramPost> latest = getLatestPostEntrySet(latestPostsFromEachUser);
             if (latest == null) {
                 break;
@@ -118,7 +119,7 @@ public class InstagramFeedLoader {
         Map<String, InstagramPost> latestPostsFromEachUser = new LinkedHashMap<>();
         for (String key : loadedPostsMap.keySet()) {
             List<InstagramPost> instagramPosts = loadedPostsMap.get(key);
-            if (instagramPosts.size() < PAGE_COUNT + 1) {
+            if (instagramPosts.size() < pageCount + 1) {
                 requestUserPosts(key);
             }
             latestPostsFromEachUser.put(key, instagramPosts.get(0));
@@ -174,7 +175,7 @@ public class InstagramFeedLoader {
                 String next = response.body().pagination.nextUrl;
                 nextUsersMap.put(userIdAndName, next);
 
-                List<InstagramPost> postsFromResponse = new ArrayList<>(PAGE_COUNT * 10);
+                List<InstagramPost> postsFromResponse = new ArrayList<>(pageCount * 10);
                 for (InstaFeedDataResponse.InstaSinglePostResponse res : response.body().instaPosts) {
                     if (res.caption == null || res.caption.text == null) {
                         postsFromResponse.add(new InstagramPost(res.user.username

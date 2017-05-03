@@ -68,6 +68,8 @@ public class InstagramSettings {
      */
     public static final String KEY_PREF_LOGOUT = "pref_instagram_logout";
 
+    public static final String KEY_PREF_PAGE_COUNT = "pref_instagram_page_count";
+
     private Set<String> usersIdsAndNames;
     private Set<String> customUsers;
     private MultiSelectListPreference selectedUsersPreference;
@@ -105,6 +107,9 @@ public class InstagramSettings {
         instagramLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
         authorizationToken = prefs.getString(KEY_PREF_INSTAGRAM_AUTH_TOKEN, null);
         userLoggedIn = authorizationToken != null;
+
+        Preference pageCount = settingsFragment.findPreference(KEY_PREF_PAGE_COUNT);
+        pageCount.setEnabled(userLoggedIn);
 
         instagramLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

@@ -16,8 +16,6 @@ import pl.nikowis.focus.ui.twitter.TwitterSettings;
 
 public class SettingsFragment extends PreferenceFragment {
 
-    public static final int MIN_PAGE_COUNT = 1;
-    public static final int MAX_PAGE_COUNT = 20;
     private FacebookSettings facebookSettings;
     private InstagramSettings instagramSettings;
     private TwitterSettings twitterSettings;

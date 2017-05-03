@@ -101,6 +101,8 @@ public class FacebookFragment extends Fragment {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetFacebookFeedLoader();
+                } else if (key.equals(FacebookSettings.KEY_PREF_PAGE_COUNT)) {
+                    resetFacebookFeedLoader();
                 }
             }
         });

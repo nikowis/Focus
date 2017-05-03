@@ -55,8 +55,11 @@ public class TwitterSettings {
         this.context = fragment.getContext();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Preference twitterLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
+
         authorizationToken = prefs.getString(KEY_PREF_TWITTER_AUTH_TOKEN, null);
         boolean userLoggedIn = authorizationToken != null;
+        Preference pageCount = settingsFragment.findPreference(KEY_PREF_PAGE_COUNT);
+        pageCount.setEnabled(userLoggedIn);
         twitterLogout.setEnabled(userLoggedIn);
         twitterLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

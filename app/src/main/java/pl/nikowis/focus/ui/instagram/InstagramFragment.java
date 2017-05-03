@@ -104,6 +104,8 @@ public class InstagramFragment extends Fragment {
                     loginButton.setVisibility(View.VISIBLE);
                     loadMorePostsButton.setVisibility(View.GONE);
                     resetInstragramFeedLoader();
+                }else if (key.equals(InstagramSettings.KEY_PREF_PAGE_COUNT)) {
+                    resetInstragramFeedLoader();
                 }
             }
         });

@@ -30,6 +30,8 @@ public class GmailSettings {
      */
     public static final String KEY_PREF_GMAIL_ACCOUNT_NAME = "pref_gmail_account_name";
 
+    public static final String KEY_PREF_PAGE_COUNT = "pref_gmail_page_count";
+
     private Context context;
     private SettingsFragment fragment;
     private boolean loggedIn;
@@ -40,6 +42,8 @@ public class GmailSettings {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Preference gmailLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
         loggedIn = prefs.getBoolean(KEY_PREF_GMAIL_LOGGED_IN, false);
+        Preference pageCount = settingsFragment.findPreference(KEY_PREF_PAGE_COUNT);
+        pageCount.setEnabled(loggedIn);
         gmailLogout.setEnabled(loggedIn);
         gmailLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

@@ -75,9 +75,22 @@ public class TwitterFragment extends Fragment {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         authToken = prefs.getString(TwitterSettings.KEY_PREF_TWITTER_AUTH_TOKEN, null);
 
-        if(authToken!=null) {
+        if (authToken != null) {
             resetTwitterFeedLoader();
         }
+
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals(TwitterSettings.KEY_PREF_LOGOUT)) {
+                    loginButton.setVisibility(View.VISIBLE);
+                    loadMorePostsButton.setVisibility(View.GONE);
+                    resetTwitterFeedLoader();
+                } else if (key.equals(TwitterSettings.KEY_PREF_PAGE_COUNT)) {
+                    resetTwitterFeedLoader();
+                }
+            }
+        });
 
         View mainFragment = inflater.inflate(R.layout.fragment_twitter, container, false);
         unbinder = ButterKnife.bind(this, mainFragment);
@@ -91,7 +104,7 @@ public class TwitterFragment extends Fragment {
                 String token = authToken.token;
                 String secret = authToken.secret;
 
-                Log.e("TWITTER LOGIN ######", "token:" + token + "  ;  secret:" + secret );
+                Log.e("TWITTER LOGIN ######", "token:" + token + "  ;  secret:" + secret);
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 prefs.edit().putString(TwitterSettings.KEY_PREF_TWITTER_AUTH_TOKEN, token).apply();
@@ -143,7 +156,7 @@ public class TwitterFragment extends Fragment {
             public void loadingMoreData() {
                 Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT).show();
                 if (loadMorePostsButton != null) {
-                   loadMorePostsButton.setVisibility(View.GONE);
+                    loadMorePostsButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -152,7 +165,7 @@ public class TwitterFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(loginButton!= null) {
+        if (loginButton != null) {
             loginButton.onActivityResult(requestCode, resultCode, data);
         }
     }

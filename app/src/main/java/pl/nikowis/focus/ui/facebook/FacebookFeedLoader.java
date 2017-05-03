@@ -36,7 +36,7 @@ public class FacebookFeedLoader {
     private Map<String, String> nextPagesMap;
     private Map<String, List<FacebookPost>> loadedPostsMap;
     private List<FacebookPost> queuedPostsList;
-    private static final int PAGE_COUNT = 10;
+    private int pageCount;
     private boolean usingCustomPages;
     private ContentLoaderEventsListener contentLoaderEventsListener;
     private int counter, currentlyLoadingPageCount;
@@ -48,7 +48,7 @@ public class FacebookFeedLoader {
         this.contentLoaderEventsListener = listener;
         visiblePostsList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
+        pageCount = Integer.parseInt(prefs.getString(FacebookSettings.KEY_PREF_PAGE_COUNT, "10"));
         usingCustomPages = prefs.getBoolean(FacebookSettings.KEY_PREF_USING_CUSTOM_PAGES, false);
 
         if (!usingCustomPages) {
@@ -59,10 +59,10 @@ public class FacebookFeedLoader {
 
         nextPagesMap = new LinkedHashMap<>();
         loadedPostsMap = new LinkedHashMap<>();
-        queuedPostsList = new ArrayList<>(PAGE_COUNT * 10);
+        queuedPostsList = new ArrayList<>(pageCount * 10);
         for (String page : selectedPageIdsAndNames) {
             nextPagesMap.put(page, "");
-            loadedPostsMap.put(page, new ArrayList<FacebookPost>(PAGE_COUNT * 10));
+            loadedPostsMap.put(page, new ArrayList<FacebookPost>(pageCount * 10));
         }
         if (selectedPageIdsAndNames.isEmpty()) {
             Toast.makeText(context, "No pages selected", Toast.LENGTH_SHORT).show();
@@ -95,7 +95,7 @@ public class FacebookFeedLoader {
     private void calculateQueuedPostsList() {
         Map<String, FacebookPost> latestPostsFromEachPage = constructLatestsPostsMap();
 
-        for (int i = 0; i < PAGE_COUNT; i++) {
+        for (int i = 0; i < pageCount; i++) {
             Map.Entry<String, FacebookPost> latest = getLatestPostEntrySet(latestPostsFromEachPage);
             if (latest == null) {
                 break;
@@ -118,7 +118,7 @@ public class FacebookFeedLoader {
         Map<String, FacebookPost> latestPostsFromEachPage = new LinkedHashMap<>();
         for (String key : loadedPostsMap.keySet()) {
             List<FacebookPost> facebookPosts = loadedPostsMap.get(key);
-            if (facebookPosts.size() < PAGE_COUNT + 1) {
+            if (facebookPosts.size() < pageCount + 1) {
 
                 requestPagePosts(key);
             }
@@ -175,7 +175,7 @@ public class FacebookFeedLoader {
                 String next = response.body().paging.next;
                 nextPagesMap.put(pageIdAndName, next);
 
-                List<FacebookPost> postsFromResponse = new ArrayList<>(PAGE_COUNT * 10);
+                List<FacebookPost> postsFromResponse = new ArrayList<>(pageCount * 10);
                 for (FbFeedDataResponse.FbSinglePostResponse res : response.body().fbSinglePostResponses) {
                     if (res.message == null || res.message.isEmpty()) {
                         postsFromResponse.add(new FacebookPost(pageName, res.id, res.story, res.date));

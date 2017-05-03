@@ -1,7 +1,9 @@
 package pl.nikowis.focus.ui.gmail;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,7 +30,7 @@ public class GmailFeedLoader {
     private List<GmailMessage> visibleMailList;
     private List<String> loadedMailIds;
     private final List<GmailMessage> loadedMailList;
-    private static final int PAGE_COUNT = 10;
+    private int pageCount;
     private GmailFeedLoader.ContentLoaderEventsListener contentLoaderEventsListener;
     private GoogleAccountCredential mCredential;
 
@@ -40,23 +42,25 @@ public class GmailFeedLoader {
         this.contentLoaderEventsListener = listener;
         this.mCredential = mCredential;
         visibleMailList.clear();
-        loadedMailIds = new ArrayList<>(PAGE_COUNT * 10);
-        loadedMailList = new ArrayList<>(PAGE_COUNT * 10);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        pageCount = Integer.parseInt(prefs.getString(GmailSettings.KEY_PREF_PAGE_COUNT, "10"));
+        loadedMailIds = new ArrayList<>(pageCount * 10);
+        loadedMailList = new ArrayList<>(pageCount * 10);
         contentLoaderEventsListener.loadingMoreData();
         loadContent();
     }
 
     public void loadContent() {
-        if (loadedMailList.size() < PAGE_COUNT + 1) {
+        if (loadedMailList.size() < pageCount + 1) {
             contentLoaderEventsListener.loadingMoreData();
-            if (loadedMailIds.size() < PAGE_COUNT + 1) {
+            if (loadedMailIds.size() < pageCount + 1) {
                 new MailIdsLoader(mCredential).execute();
                 return;
             }
             new MailLoader(mCredential).execute();
             return;
         }
-        for (int i = 0; i < PAGE_COUNT; i++) {
+        for (int i = 0; i < pageCount; i++) {
             visibleMailList.add(loadedMailList.remove(0));
         }
         contentLoaderEventsListener.readyToDisplay();
@@ -141,8 +145,8 @@ public class GmailFeedLoader {
         protected List<GmailMessage> doInBackground(Void... params) {
             try {
                 List<GmailMessage> gmailMessages = new ArrayList<>();
-                List<String> selectedIds = new ArrayList<>(PAGE_COUNT+1);
-                for(int i=0; i< PAGE_COUNT +1;i++) {
+                List<String> selectedIds = new ArrayList<>(pageCount+1);
+                for(int i=0; i< pageCount +1;i++) {
                     if(loadedMailIds.isEmpty()) {
                         break;
                     }

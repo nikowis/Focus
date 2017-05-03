@@ -19,6 +19,14 @@
         <MultiSelectListPreference
             android:key="pref_facebook_select_custom_pages"
             android:title="Select custom pages"/>
+        <ListPreference
+            android:key="pref_facebook_page_count"
+            android:persistent="true"
+            android:dialogTitle="Tweets per load"
+            android:defaultValue="10"
+            android:title="Page count"
+            android:entries="@array/page_count"
+            android:entryValues="@array/page_count" />
         <Preference android:title="Logout from facebook"
             android:key="pref_facebook_logout" />
     </PreferenceCategory>
@@ -41,6 +49,14 @@
         <MultiSelectListPreference
             android:key="pref_instagram_select_custom_users"
             android:title="Select custom users"/>
+        <ListPreference
+            android:key="pref_instagram_page_count"
+            android:persistent="true"
+            android:dialogTitle="Tweets per load"
+            android:defaultValue="10"
+            android:title="Page count"
+            android:entries="@array/page_count"
+            android:entryValues="@array/page_count" />
         <Preference android:title="Logout from instagram"
             android:key="pref_instagram_logout" />
     </PreferenceCategory>
@@ -61,6 +77,14 @@
     <PreferenceCategory
         android:key="pref_gmail_category_settings"
         android:title="Gmail">
+        <ListPreference
+            android:key="pref_gmail_page_count"
+            android:persistent="true"
+            android:dialogTitle="Tweets per load"
+            android:defaultValue="10"
+            android:title="Page count"
+            android:entries="@array/page_count"
+            android:entryValues="@array/page_count" />
         <Preference android:title="Logout from gmail"
             android:key="pref_gmail_logout" />
     </PreferenceCategory>

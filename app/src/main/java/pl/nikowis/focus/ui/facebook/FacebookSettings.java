@@ -61,6 +61,8 @@ public class FacebookSettings {
      */
     public static final String KEY_PREF_LOGOUT = "pref_facebook_logout";
 
+    public static final String KEY_PREF_PAGE_COUNT = "pref_facebook_page_count";
+
     private Set<String> pagesIdsAndNames;
     private Set<String> customPages;
     private MultiSelectListPreference selectedPagesPreference;
@@ -96,7 +98,8 @@ public class FacebookSettings {
         });
         facebookLogout = settingsFragment.findPreference(KEY_PREF_LOGOUT);
         userLoggedIn = Profile.getCurrentProfile() != null;
-
+        Preference pageCount = settingsFragment.findPreference(KEY_PREF_PAGE_COUNT);
+        pageCount.setEnabled(userLoggedIn);
         facebookLogout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
