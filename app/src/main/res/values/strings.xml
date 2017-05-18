@@ -94,6 +94,11 @@
     <string name="twitter_login_button">Login to twitter</string>
     <string name="facebook_login_button">Login to facebook</string>
     <string name="splash_retry_connecting_button">Retry connecting</string>
+    <string name="key_pref_pin">pref_pin</string>
+    <string name="pin_enter">Enter pin</string>
+    <string name="pin_enter_new">Enter new pin</string>
+    <string name="pin_incorrect">Incorrect pin</string>
+    <string name="pin_repeat">Repeat pin</string>
     <!-- PREFERENCES -->
 
 </resources>

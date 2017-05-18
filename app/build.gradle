@@ -74,6 +74,8 @@ dependencies {
         transitive = true;
     }
 
+    compile 'com.andrognito.pinlockview:pinlockview:2.0.1'
+
     compile 'com.google.android.gms:play-services-auth:10.2.4'
     compile 'pub.devrel:easypermissions:0.2.1'
     compile('com.google.api-client:google-api-client-android:1.22.0') {

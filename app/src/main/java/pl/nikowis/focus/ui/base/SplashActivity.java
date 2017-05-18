@@ -39,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startMainActivity();
+                    startPinActivity();
                 }
             }, SPLASH_DISPLAY_LENGTH);
         } else {
@@ -54,8 +54,8 @@ public class SplashActivity extends AppCompatActivity {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    private void startMainActivity() {
-        Intent i = new Intent(SplashActivity.this, MainActivity.class);
+    private void startPinActivity() {
+        Intent i = new Intent(SplashActivity.this, PinActivity.class);
         startActivity(i);
         finish();
     }
