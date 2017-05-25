@@ -129,12 +129,6 @@ public class InstagramFragment extends Fragment {
         instagramFeedLoader.loadContent();
     }
 
-    @OnClick(R.id.instagram_fab_go_to_settings)
-    public void goToSettings() {
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
-        startActivity(intent);
-    }
-
     @OnClick(R.id.instagram_login_button)
     public void loginInstagram() {
         InstagramRequestManager requestManager = InstagramRequestManager.getInstance(getContext());

@@ -103,7 +103,7 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         String accountName = prefs.getString(context.getString(R.string.key_pref_gmail_account_name), null);
         mCredential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
+        loadMorePostsButton.setVisibility(View.GONE);
         if (userLoggedIn && accountName != null) {
             loginButton.setVisibility(View.GONE);
             mCredential.setSelectedAccountName(accountName);
@@ -126,12 +126,6 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(gmailAdapter);
         return mainFragment;
-    }
-
-    @OnClick(R.id.gmail_fab_go_to_settings)
-    public void goToSettings() {
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
-        startActivity(intent);
     }
 
     @OnClick(R.id.gmail_login_button)

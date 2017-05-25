@@ -136,30 +136,29 @@ public class TwitterFragment extends Fragment {
         twitterFeedLoader.loadContent();
     }
 
-    @OnClick(R.id.twitter_fab_go_to_settings)
-    public void goToSettings() {
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
-        startActivity(intent);
-    }
-
     private void resetTwitterFeedLoader() {
-        twitterFeedLoader = new TwitterFeedLoader(context, twitterAdapter, new TwitterFeedLoader.ContentLoaderEventsListener() {
-            @Override
-            public void readyToDisplay() {
-                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
-                if (authToken != null && loadMorePostsButton != null) {
-                    loadMorePostsButton.setVisibility(View.VISIBLE);
-                }
-            }
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        authToken = prefs.getString(context.getString(R.string.key_pref_twitter_auth_token), null);
 
-            @Override
-            public void loadingMoreData() {
-                Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
-                if (loadMorePostsButton != null) {
-                    loadMorePostsButton.setVisibility(View.GONE);
+        if (authToken != null) {
+            twitterFeedLoader = new TwitterFeedLoader(context, twitterAdapter, new TwitterFeedLoader.ContentLoaderEventsListener() {
+                @Override
+                public void readyToDisplay() {
+                    Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
+                    if (authToken != null && loadMorePostsButton != null) {
+                        loadMorePostsButton.setVisibility(View.VISIBLE);
+                    }
                 }
-            }
-        });
+
+                @Override
+                public void loadingMoreData() {
+                    Toast.makeText(getActivity(), R.string.loader_loading, Toast.LENGTH_SHORT).show();
+                    if (loadMorePostsButton != null) {
+                        loadMorePostsButton.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
     }
 
     @Override

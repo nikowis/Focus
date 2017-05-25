@@ -170,12 +170,6 @@ public class FacebookFragment extends Fragment {
         facebookFeedLoader.loadContent();
     }
 
-    @OnClick(R.id.facebook_fab_go_to_settings)
-    public void goToSettings() {
-        Intent intent = new Intent(context, SettingsActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
