@@ -99,6 +99,10 @@
     <string name="pin_enter_new">Enter new pin</string>
     <string name="pin_incorrect">Incorrect pin</string>
     <string name="pin_repeat">Repeat pin</string>
+    <string name="pref_general_category_title">General</string>
+    <string name="key_pref__pin_reset">pref_reset_pin_code</string>
+    <string name="pref_general_pin_reset">Reset pin code</string>
+    <string name="pin_do_not_match">Pins do not match.</string>
     <!-- PREFERENCES -->
 
 </resources>

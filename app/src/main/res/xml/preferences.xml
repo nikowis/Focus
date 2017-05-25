@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
+        android:key="pref_category_settings"
+        android:title="@string/pref_general_category_title">
+        <Preference android:title="@string/pref_general_pin_reset"
+            android:key="@string/key_pref__pin_reset" />
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="pref_facebook_category_settings"
         android:title="@string/pref_facebook_title">
         <MultiSelectListPreference

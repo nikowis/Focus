@@ -49,7 +49,8 @@ public class PinActivity extends AppCompatActivity {
                     startMainActivity();
                 } else {
                     newPin = null;
-                    pinTextView.setText("Pins do not match, try again");
+                    pinTextView.setText(R.string.pin_do_not_match);
+                    mPinLockView.resetPinLockView();
                 }
             } else if (pin.equals(currentPin)) {
                 startMainActivity();
