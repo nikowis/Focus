@@ -103,6 +103,7 @@
     <string name="key_pref__pin_reset">pref_reset_pin_code</string>
     <string name="pref_general_pin_reset">Reset pin code</string>
     <string name="pin_do_not_match">Pins do not match.</string>
+    <string name="pref_instagram_category_key">pref_instagram_category_settings</string>
     <!-- PREFERENCES -->
 
 </resources>

@@ -36,7 +36,7 @@
             android:key="@string/key_pref_facebook_logout" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_instagram_category_settings"
+        android:key="@string/pref_instagram_category_key"
         android:title="@string/pref_instagram_title">
         <MultiSelectListPreference
             android:key="@string/key_pref_instagram_selected_users"

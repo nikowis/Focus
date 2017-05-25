@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.CheckBoxPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -110,6 +111,10 @@ public class InstagramSettings {
                 return true;
             }
         });
+        PreferenceCategory preferenceCategory = (PreferenceCategory) fragment.findPreference(context.getString(R.string.pref_instagram_category_key));
+        preferenceCategory.removePreference(addUserPreference);
+        preferenceCategory.removePreference(selectedCustomUsersPreference);
+        preferenceCategory.removePreference(usingCustomPreference);
     }
 
     private void clearUsersPreferences() {
