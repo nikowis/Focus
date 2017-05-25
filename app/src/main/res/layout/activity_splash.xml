@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="159dp"
         android:layout_gravity="center"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@mipmap/ic_launcher" />
 
     <Button
         android:id="@+id/retry_connection_button"
