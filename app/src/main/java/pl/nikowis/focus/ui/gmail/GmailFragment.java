@@ -281,7 +281,6 @@ public class GmailFragment extends Fragment implements EasyPermissions.Permissio
         gmailFeedLoader = new GmailFeedLoader(context, mCredential, gmailAdapter, new GmailFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                 if (userLoggedIn && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }

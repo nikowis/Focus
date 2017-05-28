@@ -144,7 +144,6 @@ public class TwitterFragment extends Fragment {
             twitterFeedLoader = new TwitterFeedLoader(context, twitterAdapter, new TwitterFeedLoader.ContentLoaderEventsListener() {
                 @Override
                 public void readyToDisplay() {
-                    Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                     if (authToken != null && loadMorePostsButton != null) {
                         loadMorePostsButton.setVisibility(View.VISIBLE);
                     }

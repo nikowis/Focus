@@ -156,7 +156,6 @@ public class InstagramFragment extends Fragment {
         instagramFeedLoader = new InstagramFeedLoader(context, instagramAdapter, new InstagramFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
                 if (authToken != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }

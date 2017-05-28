@@ -148,8 +148,6 @@ public class FacebookFragment extends Fragment {
         facebookFeedLoader = new FacebookFeedLoader(context, facebookAdapter, new FacebookFeedLoader.ContentLoaderEventsListener() {
             @Override
             public void readyToDisplay() {
-                Toast.makeText(context, R.string.loader_ready, Toast.LENGTH_SHORT).show();
-
                 if(currentProfile != null && loadMorePostsButton != null) {
                     loadMorePostsButton.setVisibility(View.VISIBLE);
                 }
